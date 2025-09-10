@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: tictacmed
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/tictacmed
+    username: root
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+tictacmed:
+  whatsapp:
+    enabled: false
+    from-number: "+0000000000"
+    template: "Hello {patientName}, it's time to take your {medicineName} at {scheduledAt}."
+  scheduler:
+    enabled: true
+    fixed-delay-ms: 60000
