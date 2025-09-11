@@ -1,6 +1,6 @@
 package com.abba.tictacmed.domain.scheduling.service;
 
-import com.abba.tictacmed.domain.messaging.NotificationSender;
+import com.abba.tictacmed.domain.messaging.service.NotificationSender;
 import com.abba.tictacmed.domain.scheduling.model.MedicationSchedule;
 
 import java.time.ZonedDateTime;

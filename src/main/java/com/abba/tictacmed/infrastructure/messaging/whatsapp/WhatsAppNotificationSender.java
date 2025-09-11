@@ -1,6 +1,6 @@
 package com.abba.tictacmed.infrastructure.messaging.whatsapp;
 
-import com.abba.tictacmed.domain.messaging.NotificationSender;
+import com.abba.tictacmed.domain.messaging.service.NotificationSender;
 import com.abba.tictacmed.domain.patient.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

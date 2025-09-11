@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: file:.env[.properties]
   application:
     name: tictacmed
 
@@ -13,18 +15,21 @@ spring:
 
   flyway:
     enabled: true
+    validate-on-migrate: false
 
   datasource:
-    url: jdbc:mysql://localhost:3306/tictacmed
-    username: root
-    password: secret
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/tictacmed}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 tictacmed:
   whatsapp:
-    enabled: false
-    from-number: "+0000000000"
+    enabled: ${TICTACMED_WHATSAPP_ENABLED:false}
+    from-number: ${TICTACMED_WHATSAPP_FROM_NUMBER:"+0000000000"}
     template: "Hello {patientName}, it's time to take your {medicineName} at {scheduledAt}."
+    verify-token: ${TICTACMED_WHATSAPP_VERIFY_TOKEN:fAkE_vErIfY_tOkEn}
+    access-token: ${TICTACMED_WHATSAPP_ACCESS_TOKEN:FAKE_ACCESS_TOKEN}
   scheduler:
-    enabled: true
-    fixed-delay-ms: 60000
+    enabled: ${TICTACMED_SCHEDULER_ENABLED:true}
+    fixed-delay-ms: ${TICTACMED_SCHEDULER_FIXED_DELAY_MS:60000}

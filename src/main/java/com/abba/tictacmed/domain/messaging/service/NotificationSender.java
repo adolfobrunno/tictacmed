@@ -1,4 +1,4 @@
-package com.abba.tictacmed.domain.messaging;
+package com.abba.tictacmed.domain.messaging.service;
 
 import com.abba.tictacmed.domain.patient.model.Patient;
 

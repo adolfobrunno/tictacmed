@@ -3,7 +3,7 @@ package com.abba.tictacmed.application;
 import com.abba.tictacmed.TestcontainersConfiguration;
 import com.abba.tictacmed.application.patient.command.RegisterPatientCommand;
 import com.abba.tictacmed.application.patient.command.RegisterPatientResult;
-import com.abba.tictacmed.application.patient.service.RegisterPatientUseCase;
+import com.abba.tictacmed.application.patient.usecases.RegisterPatientUseCase;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleCommand;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleResult;
 import com.abba.tictacmed.application.scheduling.service.CreateMedicationScheduleUseCase;

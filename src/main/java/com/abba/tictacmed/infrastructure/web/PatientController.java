@@ -2,7 +2,7 @@ package com.abba.tictacmed.infrastructure.web;
 
 import com.abba.tictacmed.application.patient.command.RegisterPatientCommand;
 import com.abba.tictacmed.application.patient.command.RegisterPatientResult;
-import com.abba.tictacmed.application.patient.service.RegisterPatientUseCase;
+import com.abba.tictacmed.application.patient.usecases.RegisterPatientUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

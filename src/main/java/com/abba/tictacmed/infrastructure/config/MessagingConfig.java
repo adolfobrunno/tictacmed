@@ -1,6 +1,6 @@
 package com.abba.tictacmed.infrastructure.config;
 
-import com.abba.tictacmed.domain.messaging.NotificationSender;
+import com.abba.tictacmed.domain.messaging.service.NotificationSender;
 import com.abba.tictacmed.domain.scheduling.service.SchedulingService;
 import com.abba.tictacmed.infrastructure.messaging.whatsapp.WhatsAppNotificationSender;
 import com.abba.tictacmed.infrastructure.messaging.whatsapp.WhatsAppProperties;

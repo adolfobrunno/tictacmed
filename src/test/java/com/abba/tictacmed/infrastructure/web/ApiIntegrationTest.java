@@ -1,10 +1,10 @@
 package com.abba.tictacmed.infrastructure.web;
 
 import com.abba.tictacmed.application.patient.command.RegisterPatientResult;
-import com.abba.tictacmed.application.patient.service.RegisterPatientUseCase;
+import com.abba.tictacmed.application.patient.usecases.RegisterPatientUseCase;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleResult;
 import com.abba.tictacmed.application.scheduling.service.CreateMedicationScheduleUseCase;
-import com.abba.tictacmed.application.scheduling.service.GetNextSchedulesUseCase;
+import com.abba.tictacmed.application.scheduling.usecases.GetNextSchedulesUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

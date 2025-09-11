@@ -1,6 +1,6 @@
 package com.abba.tictacmed.domain.scheduling;
 
-import com.abba.tictacmed.domain.messaging.NotificationSender;
+import com.abba.tictacmed.domain.messaging.service.NotificationSender;
 import com.abba.tictacmed.domain.patient.model.Patient;
 import com.abba.tictacmed.domain.scheduling.model.MedicationSchedule;
 import com.abba.tictacmed.domain.scheduling.service.SchedulingService;

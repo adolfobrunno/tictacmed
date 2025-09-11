@@ -1,6 +1,7 @@
 package com.abba.tictacmed.infrastructure.web;
 
-import com.abba.tictacmed.application.scheduling.service.GetNextSchedulesUseCase;
+import com.abba.tictacmed.application.scheduling.service.GetNextSchedulesUseCaseImpl;
+import com.abba.tictacmed.application.scheduling.usecases.GetNextSchedulesUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ class NextSchedulesApiTest {
     void get_next_schedules_by_patient() throws Exception {
         UUID patientId = UUID.randomUUID();
         ZonedDateTime now = ZonedDateTime.now();
-        var dto = new GetNextSchedulesUseCase.NextScheduleDto(UUID.randomUUID(), patientId, "Ibuprofen", now.plusMinutes(5));
+        var dto = new GetNextSchedulesUseCaseImpl.NextScheduleDto(UUID.randomUUID(), patientId, "Ibuprofen", now.plusMinutes(5));
         when(getNextSchedulesUseCase.execute(any(), any(), any())).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/schedules/next")

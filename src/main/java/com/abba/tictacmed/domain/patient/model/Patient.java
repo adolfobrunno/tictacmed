@@ -1,12 +1,16 @@
 package com.abba.tictacmed.domain.patient.model;
 
+import lombok.Getter;
+
 import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Patient aggregate root (domain).
  */
+@Getter
 public final class Patient {
+
     private final UUID id;
     private final String name;
     private final String contact;
@@ -26,18 +30,6 @@ public final class Patient {
      */
     public static Patient fromExisting(UUID id, String name, String contact) {
         return new Patient(id, name, contact);
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getContact() {
-        return contact;
     }
 
     private static String validateName(String name) {

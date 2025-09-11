@@ -2,8 +2,9 @@ package com.abba.tictacmed.infrastructure.web;
 
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleCommand;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleResult;
+import com.abba.tictacmed.application.scheduling.command.NextSchedulesResult;
 import com.abba.tictacmed.application.scheduling.service.CreateMedicationScheduleUseCase;
-import com.abba.tictacmed.application.scheduling.service.GetNextSchedulesUseCase;
+import com.abba.tictacmed.application.scheduling.usecases.GetNextSchedulesUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,11 +79,11 @@ public class SchedulingController {
     }
 
     @GetMapping("/next")
-    public ResponseEntity<List<GetNextSchedulesUseCase.NextScheduleDto>> next(
+    public ResponseEntity<List<NextSchedulesResult>> next(
             @RequestParam("patientId") UUID patientId,
             @RequestParam(value = "from", required = false) ZonedDateTime from,
             @RequestParam(value = "to", required = false) ZonedDateTime to) {
-        List<GetNextSchedulesUseCase.NextScheduleDto> list = getNextSchedulesUseCase.execute(patientId, from, to);
+        List<NextSchedulesResult> list = getNextSchedulesUseCase.execute(patientId, from, to);
         return ResponseEntity.ok(list);
     }
 }
