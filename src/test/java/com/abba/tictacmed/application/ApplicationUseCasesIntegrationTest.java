@@ -6,7 +6,7 @@ import com.abba.tictacmed.application.patient.command.RegisterPatientResult;
 import com.abba.tictacmed.application.patient.usecases.RegisterPatientUseCase;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleCommand;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleResult;
-import com.abba.tictacmed.application.scheduling.service.CreateMedicationScheduleUseCase;
+import com.abba.tictacmed.application.scheduling.usecases.CreateMedicationScheduleUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

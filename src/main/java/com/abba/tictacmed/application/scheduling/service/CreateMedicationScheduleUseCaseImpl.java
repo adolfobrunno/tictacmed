@@ -2,6 +2,7 @@ package com.abba.tictacmed.application.scheduling.service;
 
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleCommand;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleResult;
+import com.abba.tictacmed.application.scheduling.usecases.CreateMedicationScheduleUseCase;
 import com.abba.tictacmed.domain.patient.model.Patient;
 import com.abba.tictacmed.domain.patient.repository.PatientRepository;
 import com.abba.tictacmed.domain.scheduling.model.MedicationSchedule;
@@ -11,25 +12,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
-public class CreateMedicationScheduleUseCase {
+public class CreateMedicationScheduleUseCaseImpl implements CreateMedicationScheduleUseCase {
 
     private final PatientRepository patientRepository;
     private final MedicationScheduleRepository scheduleRepository;
 
-    public CreateMedicationScheduleUseCase(PatientRepository patientRepository, MedicationScheduleRepository scheduleRepository) {
+    public CreateMedicationScheduleUseCaseImpl(PatientRepository patientRepository, MedicationScheduleRepository scheduleRepository) {
         this.patientRepository = Objects.requireNonNull(patientRepository);
         this.scheduleRepository = Objects.requireNonNull(scheduleRepository);
     }
 
     @Transactional
+    @Override
     public CreateMedicationScheduleResult execute(CreateMedicationScheduleCommand cmd) {
         Objects.requireNonNull(cmd, "cmd");
-        UUID patientId = Objects.requireNonNull(cmd.patientId(), "patientId");
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientId));
+        String patientContact = Objects.requireNonNull(cmd.patientContact(), "patientContact");
+        Patient patient = patientRepository.findByContact(patientContact)
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientContact));
 
         MedicationSchedule schedule = MedicationSchedule.create(
                 patient,

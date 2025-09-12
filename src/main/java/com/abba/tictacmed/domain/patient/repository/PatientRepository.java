@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public interface PatientRepository {
     Patient save(Patient patient);
-
     Optional<Patient> findById(UUID id);
+
+    Optional<Patient> findByContact(String contact);
 }

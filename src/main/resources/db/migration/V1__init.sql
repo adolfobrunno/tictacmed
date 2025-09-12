@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS administration_record
     id           BINARY(16) PRIMARY KEY,
     schedule_id  BINARY(16)   NOT NULL,
     scheduled_at TIMESTAMP(3) NOT NULL,
-    confirmed_at TIMESTAMP(3) NOT NULL,
+    confirmed_at TIMESTAMP(3),
     status VARCHAR(20) NOT NULL,
     CONSTRAINT fk_record_schedule FOREIGN KEY (schedule_id) REFERENCES medication_schedule (id),
     CONSTRAINT uq_schedule_scheduled_at UNIQUE (schedule_id, scheduled_at)

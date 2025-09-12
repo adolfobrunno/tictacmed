@@ -26,7 +26,7 @@ public class AdministrationRecordEntity {
     @Column(name = "scheduled_at", nullable = false)
     private OffsetDateTime scheduledAt;
 
-    @Column(name = "confirmed_at", nullable = false)
+    @Column(name = "confirmed_at")
     private OffsetDateTime confirmedAt;
 
     @Enumerated(EnumType.STRING)

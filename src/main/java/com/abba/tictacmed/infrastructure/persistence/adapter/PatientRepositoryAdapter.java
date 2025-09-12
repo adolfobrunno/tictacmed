@@ -32,4 +32,9 @@ public class PatientRepositoryAdapter implements PatientRepository {
     public Optional<Patient> findById(UUID id) {
         return jpaRepository.findById(id).map(PersistenceMappers::toDomain);
     }
+
+    @Override
+    public Optional<Patient> findByContact(String contact) {
+        return jpaRepository.findByContact(contact).map(PersistenceMappers::toDomain);
+    }
 }

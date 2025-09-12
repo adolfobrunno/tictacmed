@@ -3,7 +3,7 @@ package com.abba.tictacmed.infrastructure.web;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleCommand;
 import com.abba.tictacmed.application.scheduling.command.CreateMedicationScheduleResult;
 import com.abba.tictacmed.application.scheduling.command.NextSchedulesResult;
-import com.abba.tictacmed.application.scheduling.service.CreateMedicationScheduleUseCase;
+import com.abba.tictacmed.application.scheduling.usecases.CreateMedicationScheduleUseCase;
 import com.abba.tictacmed.application.scheduling.usecases.GetNextSchedulesUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class SchedulingController {
         this.getNextSchedulesUseCase = getNextSchedulesUseCase;
     }
 
-    public record CreateScheduleRequest(UUID patientId, String medicineName, OffsetDateTime startAt,
+    public record CreateScheduleRequest(String patientId, String medicineName, OffsetDateTime startAt,
                                         OffsetDateTime endAt,
                                         String frequency) {
     }

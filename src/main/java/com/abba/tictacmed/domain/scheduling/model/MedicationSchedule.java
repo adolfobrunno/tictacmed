@@ -23,7 +23,7 @@ public final class MedicationSchedule {
 
     private final List<AdministrationRecord> administrations = new ArrayList<>();
 
-    public MedicationSchedule(UUID id, Patient patient, String medicineName, OffsetDateTime startAt, OffsetDateTime endAt, Duration frequency) {
+    public MedicationSchedule(UUID id, Patient patient, String medicineName, OffsetDateTime startAt, OffsetDateTime endAt, Duration frequency, List<AdministrationRecord> administrations) {
         this.id = Objects.requireNonNull(id, "id is required");
         this.patient = Objects.requireNonNull(patient, "patient is required");
         this.medicineName = Objects.requireNonNull(medicineName, "medicineName is required");
@@ -33,10 +33,20 @@ public final class MedicationSchedule {
         if (!endAt.isAfter(startAt)) throw new IllegalArgumentException("endAt must be after startAt");
         if (frequency.isZero() || frequency.isNegative())
             throw new IllegalArgumentException("frequency must be positive");
+        this.administrations.addAll(administrations);
     }
 
     public static MedicationSchedule create(Patient patient, String medicineName, OffsetDateTime startAt, OffsetDateTime endAt, Duration frequency) {
-        return new MedicationSchedule(UUID.randomUUID(), patient, medicineName, startAt, endAt, frequency);
+        List<AdministrationRecord> administrations = new ArrayList<>();
+        OffsetDateTime currentDate = startAt;
+
+        while (!currentDate.isAfter(endAt)) {
+            administrations.add(new AdministrationRecord(currentDate, null, AdministrationStatus.SCHEDULED));
+            currentDate = currentDate.plus(frequency);
+        }
+
+
+        return new MedicationSchedule(UUID.randomUUID(), patient, medicineName, startAt, endAt, frequency, administrations);
     }
 
 
