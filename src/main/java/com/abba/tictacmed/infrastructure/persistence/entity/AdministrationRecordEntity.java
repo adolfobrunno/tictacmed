@@ -35,11 +35,12 @@ public class AdministrationRecordEntity {
     protected AdministrationRecordEntity() {
     }
 
-    public AdministrationRecordEntity(UUID id, MedicationScheduleEntity schedule, OffsetDateTime scheduledAt, OffsetDateTime confirmedAt) {
+    public AdministrationRecordEntity(UUID id, MedicationScheduleEntity schedule, OffsetDateTime scheduledAt, OffsetDateTime confirmedAt, AdministrationStatus status) {
         this.id = id;
         this.schedule = schedule;
         this.scheduledAt = scheduledAt;
         this.confirmedAt = confirmedAt;
+        this.status = status;
     }
 
 }

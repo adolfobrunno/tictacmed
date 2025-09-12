@@ -37,7 +37,7 @@ class ScheduledReminderJobIntegrationTest {
         schedulerProperties.setEnabled(true);
 
         var patient = register.execute(new RegisterPatientCommand("Cron User", "+551100000000"));
-        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.of("UTC"));
+        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.UTC);
         OffsetDateTime end = start.plusHours(8);
         createSchedule.execute(new CreateMedicationScheduleCommand(
                 patient.id(), "TestMed", start, end, Duration.ofHours(8).getSeconds()

@@ -35,7 +35,7 @@ class ApplicationUseCasesIntegrationTest {
     void should_register_patient_and_create_schedule() {
         RegisterPatientResult p = registerPatientUseCase.execute(new RegisterPatientCommand("Alice", "alice@example.com"));
         assertNotNull(p.id());
-        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.of("UTC"));
+        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.UTC);
         OffsetDateTime end = start.plusDays(1);
         CreateMedicationScheduleResult s = createMedicationScheduleUseCase.execute(
                 new CreateMedicationScheduleCommand(p.id(), "Paracetamol", start, end, Duration.ofHours(8).getSeconds())

@@ -20,7 +20,7 @@ public class MedicationDomainTest {
     @Test
     void register_patient_create_schedule_and_notify_due() {
         Patient patient = Patient.register("John Doe", "+551199999999");
-        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.of("UTC"));
+        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.UTC);
         OffsetDateTime end = start.plusDays(1);
         Duration freq = Duration.ofHours(8);
 
@@ -51,7 +51,7 @@ public class MedicationDomainTest {
     @Test
     void schedule_alignment_and_bounds() {
         Patient patient = Patient.register("Jane Doe", "jane@example.com");
-        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.of("UTC"));
+        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.UTC);
         OffsetDateTime end = start.plusHours(10);
         Duration freq = Duration.ofHours(2);
         MedicationSchedule schedule = MedicationSchedule.create(patient, "Ibuprofen", start, end, freq);

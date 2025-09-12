@@ -22,7 +22,7 @@ class WhatsAppNotificationSenderTest {
         WhatsAppNotificationSender sender = new WhatsAppNotificationSender(props);
 
         Patient p = Patient.fromExisting(UUID.randomUUID(), "Test User", "+551199999999");
-        OffsetDateTime slot = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.of("UTC"));
+        OffsetDateTime slot = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.UTC);
         assertDoesNotThrow(() -> sender.sendMedicationReminder(UUID.randomUUID(), p, "Ibuprofen", slot));
     }
 }

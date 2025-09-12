@@ -1,6 +1,7 @@
 package com.abba.tictacmed.infrastructure.persistence.adapter;
 
 import com.abba.tictacmed.domain.patient.model.Patient;
+import com.abba.tictacmed.domain.scheduling.model.AdministrationStatus;
 import com.abba.tictacmed.domain.scheduling.model.MedicationSchedule;
 import com.abba.tictacmed.domain.scheduling.repository.MedicationScheduleRepository;
 import com.abba.tictacmed.infrastructure.mapper.PersistenceMappers;
@@ -46,7 +47,8 @@ public class MedicationScheduleRepositoryAdapter implements MedicationScheduleRe
             AdministrationRecordEntity rec = new AdministrationRecordEntity(
                     UUID.randomUUID(), saved,
                     ar.scheduledAt(),
-                    ar.confirmedAt()
+                    ar.confirmedAt(),
+                    AdministrationStatus.SCHEDULED
             );
             recordRepo.save(rec);
         });

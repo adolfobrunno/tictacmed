@@ -64,7 +64,7 @@ public final class MedicationSchedule {
         if (scheduledTime.isBefore(startAt) || scheduledTime.isAfter(endAt)) {
             throw new IllegalArgumentException("scheduledTime out of bounds");
         }
-        long fromStart = java.time.Duration.between(startAt, scheduledTime).getSeconds();
+        long fromStart = Duration.between(startAt, scheduledTime).getSeconds();
         long step = frequency.getSeconds();
         if (fromStart % step != 0) throw new IllegalArgumentException("scheduledTime must align with frequency grid");
         return administrations.stream().filter(a -> a.scheduledAt().isEqual(scheduledTime)).findFirst()
@@ -81,9 +81,5 @@ public final class MedicationSchedule {
 
     public record AdministrationRecord(OffsetDateTime scheduledAt, OffsetDateTime confirmedAt,
                                        AdministrationStatus status) {
-        public AdministrationRecord {
-            Objects.requireNonNull(scheduledAt, "scheduledAt is required");
-            Objects.requireNonNull(confirmedAt, "confirmedAt is required");
-        }
     }
 }
