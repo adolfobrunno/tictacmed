@@ -41,7 +41,7 @@ public final class MedicationSchedule {
         OffsetDateTime currentDate = startAt;
 
         while (!currentDate.isAfter(endAt)) {
-            administrations.add(new AdministrationRecord(currentDate, null, AdministrationStatus.SCHEDULED));
+            administrations.add(new AdministrationRecord(medicineName, currentDate, null, AdministrationStatus.SCHEDULED));
             currentDate = currentDate.plus(frequency);
         }
 
@@ -79,7 +79,7 @@ public final class MedicationSchedule {
         if (fromStart % step != 0) throw new IllegalArgumentException("scheduledTime must align with frequency grid");
         return administrations.stream().filter(a -> a.scheduledAt().isEqual(scheduledTime)).findFirst()
                 .orElseGet(() -> {
-                    AdministrationRecord rec = new AdministrationRecord(scheduledTime, confirmedAt == null ? OffsetDateTime.now() : confirmedAt, AdministrationStatus.CONFIRMED);
+                    AdministrationRecord rec = new AdministrationRecord(this.getMedicineName(), scheduledTime, confirmedAt == null ? OffsetDateTime.now() : confirmedAt, AdministrationStatus.CONFIRMED);
                     administrations.add(rec);
                     return rec;
                 });
@@ -89,7 +89,7 @@ public final class MedicationSchedule {
         return administrations.stream().anyMatch(a -> a.scheduledAt().isEqual(scheduledTime));
     }
 
-    public record AdministrationRecord(OffsetDateTime scheduledAt, OffsetDateTime confirmedAt,
+    public record AdministrationRecord(String medicineName, OffsetDateTime scheduledAt, OffsetDateTime confirmedAt,
                                        AdministrationStatus status) {
     }
 }

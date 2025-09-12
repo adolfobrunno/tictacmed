@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -80,11 +79,11 @@ public class SchedulingController {
     }
 
     @GetMapping("/next")
-    public ResponseEntity<List<NextSchedulesResult>> next(
+    public ResponseEntity<NextSchedulesResult> next(
             @RequestParam("patientId") UUID patientId,
             @RequestParam(value = "from", required = false) OffsetDateTime from,
             @RequestParam(value = "to", required = false) OffsetDateTime to) {
-        List<NextSchedulesResult> list = getNextSchedulesUseCase.execute(patientId, from, to);
+        NextSchedulesResult list = getNextSchedulesUseCase.execute(patientId, from, to);
         return ResponseEntity.ok(list);
     }
 }

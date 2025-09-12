@@ -19,7 +19,7 @@ public class AdministrationRecordEntity {
     @JdbcTypeCode(SqlTypes.BINARY)
     private UUID id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "schedule_id", nullable = false, columnDefinition = "BINARY(16)")
     private MedicationScheduleEntity schedule;
 

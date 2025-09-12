@@ -1,5 +1,6 @@
 package com.abba.tictacmed.domain.scheduling.repository;
 
+import com.abba.tictacmed.domain.patient.model.Patient;
 import com.abba.tictacmed.domain.scheduling.model.MedicationSchedule;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface MedicationScheduleRepository {
     List<MedicationSchedule> findByPatientId(UUID patientId);
 
     List<MedicationSchedule> findAll();
+
+    Optional<MedicationSchedule.AdministrationRecord> findNextScheduled(Patient patient);
 }

@@ -89,4 +89,9 @@ public class MedicationScheduleRepositoryAdapter implements MedicationScheduleRe
             return PersistenceMappers.toDomain(entity, patient, records);
         }).toList();
     }
+
+    @Override
+    public Optional<MedicationSchedule.AdministrationRecord> findNextScheduled(Patient patient) {
+        return recordRepo.findTopOneBySchedule_Patient_IdAndStatusOrderByScheduledAtAsc(patient.getId(), AdministrationStatus.SCHEDULED).map(PersistenceMappers::toDomain);
+    }
 }

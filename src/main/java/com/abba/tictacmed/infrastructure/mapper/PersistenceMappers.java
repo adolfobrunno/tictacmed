@@ -40,8 +40,12 @@ public final class PersistenceMappers {
                 entity.getStartAt(),
                 entity.getEndAt(),
                 Duration.ofSeconds(entity.getFrequencySeconds()),
-                records.stream().map(e -> new MedicationSchedule.AdministrationRecord(e.getScheduledAt(), e.getConfirmedAt(), e.getStatus())).toList()
+                records.stream().map(e -> new MedicationSchedule.AdministrationRecord(entity.getMedicineName(), e.getScheduledAt(), e.getConfirmedAt(), e.getStatus())).toList()
         );
+    }
+
+    public static MedicationSchedule.AdministrationRecord toDomain(AdministrationRecordEntity record) {
+        return new MedicationSchedule.AdministrationRecord(record.getSchedule().getMedicineName(), record.getScheduledAt(), record.getConfirmedAt(), record.getStatus());
     }
 
 }
