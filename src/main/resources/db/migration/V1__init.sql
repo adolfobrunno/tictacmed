@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS patient
 (
     id      BINARY(16) PRIMARY KEY,
     name    VARCHAR(200) NOT NULL,
-    contact VARCHAR(255) NOT NULL
+    contact VARCHAR(255) NOT NULL UNIQUE
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS medication_schedule
@@ -23,6 +23,18 @@ CREATE TABLE IF NOT EXISTS administration_record
     schedule_id  BINARY(16)   NOT NULL,
     scheduled_at TIMESTAMP(3) NOT NULL,
     confirmed_at TIMESTAMP(3) NOT NULL,
+    status VARCHAR(20) NOT NULL,
     CONSTRAINT fk_record_schedule FOREIGN KEY (schedule_id) REFERENCES medication_schedule (id),
     CONSTRAINT uq_schedule_scheduled_at UNIQUE (schedule_id, scheduled_at)
+) ENGINE = InnoDB;
+
+-- Table to store inbound WhatsApp messages
+CREATE TABLE IF NOT EXISTS whatsapp_messages
+(
+    id           VARCHAR(100) PRIMARY KEY,
+    from_number  VARCHAR(50)  NOT NULL,
+    body         TEXT         NOT NULL,
+    status       VARCHAR(20)  NOT NULL,
+    received_at  TIMESTAMP(3) NOT NULL,
+    processed_at TIMESTAMP(3) NULL
 ) ENGINE = InnoDB;

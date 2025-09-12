@@ -4,23 +4,26 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
 @Entity
+@Data
 @Table(name = "patient")
 public class PatientEntity {
 
     @Id
     @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(org.hibernate.type.SqlTypes.BINARY)
+    @JdbcTypeCode(SqlTypes.BINARY)
     private UUID id;
 
     @Column(name = "name", nullable = false, length = 200)
     private String name;
 
-    @Column(name = "contact", nullable = false, length = 255)
+    @Column(name = "contact", nullable = false, length = 255, unique = true)
     private String contact;
 
     protected PatientEntity() {
@@ -32,27 +35,4 @@ public class PatientEntity {
         this.contact = contact;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
 }

@@ -10,9 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.abba.tictacmed.infrastructure.mapper.PersistenceMappers.toOffset;
-import static com.abba.tictacmed.infrastructure.mapper.PersistenceMappers.toZoned;
-
 @Repository
 public class WhatsAppMessageRepositoryAdapter implements WhatsAppMessageRepository {
 
@@ -29,8 +26,8 @@ public class WhatsAppMessageRepositoryAdapter implements WhatsAppMessageReposito
                 message.getFrom(),
                 message.getBody(),
                 message.getStatus(),
-                toOffset(message.getReceivedAt()),
-                message.getProcessedAt() == null ? null : toOffset(message.getProcessedAt())
+                message.getReceivedAt(),
+                message.getProcessedAt() == null ? null : message.getProcessedAt()
         );
         jpaRepository.save(entity);
     }
@@ -48,8 +45,8 @@ public class WhatsAppMessageRepositoryAdapter implements WhatsAppMessageReposito
                 e.getId(),
                 e.getFrom(),
                 e.getBody(),
-                toZoned(e.getReceivedAt()),
-                e.getProcessedAt() == null ? null : toZoned(e.getProcessedAt()),
+                e.getReceivedAt(),
+                e.getProcessedAt() == null ? null : e.getProcessedAt(),
                 e.getStatus()
         );
     }

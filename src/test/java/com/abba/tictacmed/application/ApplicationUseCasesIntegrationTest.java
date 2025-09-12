@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,8 +35,8 @@ class ApplicationUseCasesIntegrationTest {
     void should_register_patient_and_create_schedule() {
         RegisterPatientResult p = registerPatientUseCase.execute(new RegisterPatientCommand("Alice", "alice@example.com"));
         assertNotNull(p.id());
-        ZonedDateTime start = ZonedDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneId.of("UTC"));
-        ZonedDateTime end = start.plusDays(1);
+        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.of("UTC"));
+        OffsetDateTime end = start.plusDays(1);
         CreateMedicationScheduleResult s = createMedicationScheduleUseCase.execute(
                 new CreateMedicationScheduleCommand(p.id(), "Paracetamol", start, end, Duration.ofHours(8).getSeconds())
         );

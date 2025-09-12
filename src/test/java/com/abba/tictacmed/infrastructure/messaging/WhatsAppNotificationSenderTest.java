@@ -5,8 +5,8 @@ import com.abba.tictacmed.infrastructure.messaging.whatsapp.WhatsAppNotification
 import com.abba.tictacmed.infrastructure.messaging.whatsapp.WhatsAppProperties;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -22,7 +22,7 @@ class WhatsAppNotificationSenderTest {
         WhatsAppNotificationSender sender = new WhatsAppNotificationSender(props);
 
         Patient p = Patient.fromExisting(UUID.randomUUID(), "Test User", "+551199999999");
-        ZonedDateTime slot = ZonedDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneId.of("UTC"));
+        OffsetDateTime slot = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.of("UTC"));
         assertDoesNotThrow(() -> sender.sendMedicationReminder(UUID.randomUUID(), p, "Ibuprofen", slot));
     }
 }

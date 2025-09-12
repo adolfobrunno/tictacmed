@@ -3,7 +3,7 @@ package com.abba.tictacmed.domain.scheduling.service;
 import com.abba.tictacmed.domain.messaging.service.NotificationSender;
 import com.abba.tictacmed.domain.scheduling.model.MedicationSchedule;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 /**
@@ -21,7 +21,7 @@ public final class SchedulingService {
      * If a schedule has a dose due at or after the reference time, send a reminder for the earliest due slot.
      * Returns the scheduledAt that was notified, or null if none due.
      */
-    public ZonedDateTime notifyNextDue(MedicationSchedule schedule, ZonedDateTime reference) {
+    public OffsetDateTime notifyNextDue(MedicationSchedule schedule, OffsetDateTime reference) {
         return schedule.nextDue(reference)
                 .map(scheduledAt -> {
                     notificationSender.sendMedicationReminder(schedule.getId(), schedule.getPatient(), schedule.getMedicineName(), scheduledAt);

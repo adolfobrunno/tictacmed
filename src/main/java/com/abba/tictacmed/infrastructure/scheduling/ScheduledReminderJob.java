@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 @Component
 public class ScheduledReminderJob {
@@ -35,7 +35,7 @@ public class ScheduledReminderJob {
             log.debug("Reminder scheduler disabled; skipping run");
             return;
         }
-        var now = ZonedDateTime.now();
+        var now = OffsetDateTime.now();
         int notifications = 0;
         for (var schedule : scheduleRepository.findAll()) {
             var notified = schedulingService.notifyNextDue(schedule, now);
@@ -51,7 +51,7 @@ public class ScheduledReminderJob {
     // Expose a method to facilitate tests without waiting on @Scheduled timing.
     public int runOnceNow() {
         if (!properties.isEnabled()) return 0;
-        var now = ZonedDateTime.now();
+        var now = OffsetDateTime.now();
         int notifications = 0;
         for (var schedule : scheduleRepository.findAll()) {
             var notified = schedulingService.notifyNextDue(schedule, now);

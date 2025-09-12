@@ -45,8 +45,8 @@ public class MedicationScheduleRepositoryAdapter implements MedicationScheduleRe
         schedule.getAdministrations().forEach(ar -> {
             AdministrationRecordEntity rec = new AdministrationRecordEntity(
                     UUID.randomUUID(), saved,
-                    PersistenceMappers.toOffset(ar.scheduledAt()),
-                    PersistenceMappers.toOffset(ar.confirmedAt())
+                    ar.scheduledAt(),
+                    ar.confirmedAt()
             );
             recordRepo.save(rec);
         });

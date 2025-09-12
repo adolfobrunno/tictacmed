@@ -7,9 +7,6 @@ import com.abba.tictacmed.infrastructure.persistence.entity.MedicationScheduleEn
 import com.abba.tictacmed.infrastructure.persistence.entity.PatientEntity;
 
 import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 public final class PersistenceMappers {
@@ -29,8 +26,8 @@ public final class PersistenceMappers {
                 schedule.getId(),
                 patientEntity,
                 schedule.getMedicineName(),
-                toOffset(schedule.getStartAt()),
-                toOffset(schedule.getEndAt()),
+                schedule.getStartAt(),
+                schedule.getEndAt(),
                 schedule.getFrequency().getSeconds()
         );
     }
@@ -40,20 +37,13 @@ public final class PersistenceMappers {
                 entity.getId(),
                 patient,
                 entity.getMedicineName(),
-                toZoned(entity.getStartAt()),
-                toZoned(entity.getEndAt()),
+                entity.getStartAt(),
+                entity.getEndAt(),
                 Duration.ofSeconds(entity.getFrequencySeconds())
         );
         // reapply administration records
-        records.forEach(r -> schedule.confirmAdministration(toZoned(r.getScheduledAt()), toZoned(r.getConfirmedAt())));
+        records.forEach(r -> schedule.confirmAdministration(r.getScheduledAt(), r.getConfirmedAt()));
         return schedule;
     }
 
-    public static OffsetDateTime toOffset(ZonedDateTime zdt) {
-        return zdt.withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime();
-    }
-
-    public static ZonedDateTime toZoned(OffsetDateTime odt) {
-        return odt.atZoneSameInstant(ZoneOffset.UTC);
-    }
 }

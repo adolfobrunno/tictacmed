@@ -1,16 +1,17 @@
 package com.abba.tictacmed.infrastructure.web;
 
-import com.abba.tictacmed.application.scheduling.service.GetNextSchedulesUseCaseImpl;
+import com.abba.tictacmed.application.scheduling.command.NextSchedulesResult;
+import com.abba.tictacmed.application.scheduling.service.CreateMedicationScheduleUseCase;
 import com.abba.tictacmed.application.scheduling.usecases.GetNextSchedulesUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,16 +29,16 @@ class NextSchedulesApiTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @MockBean
-    com.abba.tictacmed.application.scheduling.service.CreateMedicationScheduleUseCase createMedicationScheduleUseCase;
-    @MockBean
+    @MockitoBean
+    CreateMedicationScheduleUseCase createMedicationScheduleUseCase;
+    @MockitoBean
     GetNextSchedulesUseCase getNextSchedulesUseCase;
 
     @Test
     void get_next_schedules_by_patient() throws Exception {
         UUID patientId = UUID.randomUUID();
-        ZonedDateTime now = ZonedDateTime.now();
-        var dto = new GetNextSchedulesUseCaseImpl.NextScheduleDto(UUID.randomUUID(), patientId, "Ibuprofen", now.plusMinutes(5));
+        OffsetDateTime now = OffsetDateTime.now();
+        var dto = new NextSchedulesResult(UUID.randomUUID(), patientId, "Ibuprofen", now.plusMinutes(5));
         when(getNextSchedulesUseCase.execute(any(), any(), any())).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/schedules/next")

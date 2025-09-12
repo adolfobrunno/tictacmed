@@ -1,13 +1,13 @@
 package com.abba.tictacmed.application.scheduling.command;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public record CreateMedicationScheduleCommand(
         UUID patientId,
         String medicineName,
-        ZonedDateTime startAt,
-        ZonedDateTime endAt,
+        OffsetDateTime startAt,
+        OffsetDateTime endAt,
         long frequencySeconds
 ) {
 }

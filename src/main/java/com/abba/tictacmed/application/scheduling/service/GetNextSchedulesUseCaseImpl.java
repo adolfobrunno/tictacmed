@@ -5,7 +5,7 @@ import com.abba.tictacmed.application.scheduling.usecases.GetNextSchedulesUseCas
 import com.abba.tictacmed.domain.scheduling.repository.MedicationScheduleRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -21,10 +21,10 @@ public class GetNextSchedulesUseCaseImpl implements GetNextSchedulesUseCase {
     }
 
     @Override
-    public List<NextSchedulesResult> execute(UUID patientId, ZonedDateTime from, ZonedDateTime to) {
+    public List<NextSchedulesResult> execute(UUID patientId, OffsetDateTime from, OffsetDateTime to) {
         Objects.requireNonNull(patientId, "patientId");
-        ZonedDateTime start = from == null ? ZonedDateTime.now() : from;
-        ZonedDateTime end = to == null ? start.plusDays(1) : to;
+        OffsetDateTime start = from == null ? OffsetDateTime.now() : from;
+        OffsetDateTime end = to == null ? start.plusDays(1) : to;
         if (!end.isAfter(start)) throw new IllegalArgumentException("to must be after from");
 
         return scheduleRepository.findByPatientId(patientId).stream()

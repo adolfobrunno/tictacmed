@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,8 +33,8 @@ class PersistenceIntegrationTest {
         patient = patientRepository.save(patient);
         assertNotNull(patient.getId());
 
-        ZonedDateTime start = ZonedDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneId.of("UTC"));
-        ZonedDateTime end = start.plusDays(1);
+        OffsetDateTime start = OffsetDateTime.of(2025, 9, 9, 8, 0, 0, 0, ZoneOffset.UTC);
+        OffsetDateTime end = start.plusDays(1);
         MedicationSchedule schedule = MedicationSchedule.create(patient, "Dipyrone", start, end, Duration.ofHours(8));
         // confirm one dose
         schedule.confirmAdministration(start, start.plusMinutes(10));

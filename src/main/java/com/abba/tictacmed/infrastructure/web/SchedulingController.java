@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,7 +26,8 @@ public class SchedulingController {
         this.getNextSchedulesUseCase = getNextSchedulesUseCase;
     }
 
-    public record CreateScheduleRequest(UUID patientId, String medicineName, ZonedDateTime startAt, ZonedDateTime endAt,
+    public record CreateScheduleRequest(UUID patientId, String medicineName, OffsetDateTime startAt,
+                                        OffsetDateTime endAt,
                                         String frequency) {
     }
 
@@ -81,8 +82,8 @@ public class SchedulingController {
     @GetMapping("/next")
     public ResponseEntity<List<NextSchedulesResult>> next(
             @RequestParam("patientId") UUID patientId,
-            @RequestParam(value = "from", required = false) ZonedDateTime from,
-            @RequestParam(value = "to", required = false) ZonedDateTime to) {
+            @RequestParam(value = "from", required = false) OffsetDateTime from,
+            @RequestParam(value = "to", required = false) OffsetDateTime to) {
         List<NextSchedulesResult> list = getNextSchedulesUseCase.execute(patientId, from, to);
         return ResponseEntity.ok(list);
     }

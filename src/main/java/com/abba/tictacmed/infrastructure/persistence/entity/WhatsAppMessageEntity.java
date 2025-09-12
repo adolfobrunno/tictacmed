@@ -2,15 +2,13 @@ package com.abba.tictacmed.infrastructure.persistence.entity;
 
 import com.abba.tictacmed.domain.messaging.model.WhatsAppMessageStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "whatsapp_messages")
-@Getter
-@Setter
+@Data
 public class WhatsAppMessageEntity {
 
     @Id

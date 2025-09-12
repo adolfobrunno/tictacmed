@@ -5,7 +5,7 @@ import com.abba.tictacmed.domain.patient.model.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class WhatsAppNotificationSender implements NotificationSender {
     }
 
     @Override
-    public void sendMedicationReminder(UUID scheduleId, Patient patient, String medicineName, ZonedDateTime scheduledAt) {
+    public void sendMedicationReminder(UUID scheduleId, Patient patient, String medicineName, OffsetDateTime scheduledAt) {
         if (!properties.isEnabled()) {
             log.info("[WhatsApp disabled] Would send reminder: scheduleId={}, to={}, med={}, at={}",
                     scheduleId, safe(patient.getContact()), medicineName, ISO_FMT.format(scheduledAt));

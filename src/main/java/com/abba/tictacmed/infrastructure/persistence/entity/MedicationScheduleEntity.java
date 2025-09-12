@@ -1,18 +1,21 @@
 package com.abba.tictacmed.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
+@Data
 @Table(name = "medication_schedule")
 public class MedicationScheduleEntity {
 
     @Id
     @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(org.hibernate.type.SqlTypes.BINARY)
+    @JdbcTypeCode(SqlTypes.BINARY)
     private UUID id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -43,51 +46,4 @@ public class MedicationScheduleEntity {
         this.frequencySeconds = frequencySeconds;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public PatientEntity getPatient() {
-        return patient;
-    }
-
-    public String getMedicineName() {
-        return medicineName;
-    }
-
-    public OffsetDateTime getStartAt() {
-        return startAt;
-    }
-
-    public OffsetDateTime getEndAt() {
-        return endAt;
-    }
-
-    public long getFrequencySeconds() {
-        return frequencySeconds;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public void setPatient(PatientEntity patient) {
-        this.patient = patient;
-    }
-
-    public void setMedicineName(String medicineName) {
-        this.medicineName = medicineName;
-    }
-
-    public void setStartAt(OffsetDateTime startAt) {
-        this.startAt = startAt;
-    }
-
-    public void setEndAt(OffsetDateTime endAt) {
-        this.endAt = endAt;
-    }
-
-    public void setFrequencySeconds(long frequencySeconds) {
-        this.frequencySeconds = frequencySeconds;
-    }
 }

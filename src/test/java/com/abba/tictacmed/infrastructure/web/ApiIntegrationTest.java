@@ -13,7 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +46,7 @@ class ApiIntegrationTest {
         var generatedPatientId = UUID.randomUUID();
         var patientResult = new RegisterPatientResult(generatedPatientId, "John Doe", "+123456789");
         java.time.Duration every10m = java.time.Duration.ofMinutes(10);
-        var start = ZonedDateTime.now().plusMinutes(1);
+        var start = OffsetDateTime.now().plusMinutes(1);
         var end = start.plusHours(2);
         var generatedScheduleId = UUID.randomUUID();
         var scheduleResult = new CreateMedicationScheduleResult(
