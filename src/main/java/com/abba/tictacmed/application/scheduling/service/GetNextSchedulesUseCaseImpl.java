@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class GetNextSchedulesUseCaseImpl implements GetNextSchedulesUseCase {
@@ -24,7 +23,7 @@ public class GetNextSchedulesUseCaseImpl implements GetNextSchedulesUseCase {
     }
 
     @Override
-    public NextSchedulesResult execute(UUID patientId, OffsetDateTime from, OffsetDateTime to) {
+    public NextSchedulesResult execute(String patientId, OffsetDateTime from, OffsetDateTime to) {
         Objects.requireNonNull(patientId, "patientId");
 
         Optional<MedicationSchedule.AdministrationRecord> next = scheduleRepository.findNextScheduled(patientRepository.findById(patientId).orElseThrow());

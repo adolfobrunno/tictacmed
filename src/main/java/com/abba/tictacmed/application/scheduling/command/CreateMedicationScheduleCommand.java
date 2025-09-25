@@ -1,5 +1,6 @@
 package com.abba.tictacmed.application.scheduling.command;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 
 public record CreateMedicationScheduleCommand(
@@ -7,6 +8,6 @@ public record CreateMedicationScheduleCommand(
         String medicineName,
         OffsetDateTime startAt,
         OffsetDateTime endAt,
-        long frequencySeconds
-) {
+        Duration frequency,
+        boolean recurring) {
 }

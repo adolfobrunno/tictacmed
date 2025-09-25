@@ -1,12 +1,11 @@
 package com.abba.tictacmed.infrastructure.persistence.repository;
 
 import com.abba.tictacmed.infrastructure.persistence.entity.PatientEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public interface PatientJpaRepository extends JpaRepository<PatientEntity, UUID> {
+public interface PatientJpaRepository extends MongoRepository<PatientEntity, String> {
 
     Optional<PatientEntity> findByContact(String contact);
 

@@ -1,49 +1,37 @@
 package com.abba.tictacmed.infrastructure.persistence.entity;
 
-import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Entity
 @Data
-@Table(name = "medication_schedule")
+@Document(collection = "medication_schedule")
+@AllArgsConstructor
+@NoArgsConstructor
 public class MedicationScheduleEntity {
 
     @Id
-    @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(SqlTypes.BINARY)
     private UUID id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", nullable = false, columnDefinition = "BINARY(16)")
+    @DBRef
     private PatientEntity patient;
 
-    @Column(name = "medicine_name", nullable = false, length = 200)
     private String medicineName;
 
-    @Column(name = "start_at", nullable = false)
     private OffsetDateTime startAt;
 
-    @Column(name = "end_at", nullable = false)
     private OffsetDateTime endAt;
 
-    @Column(name = "frequency_seconds", nullable = false)
     private long frequencySeconds;
 
-    protected MedicationScheduleEntity() {
-    }
+    private boolean recurring;
 
-    public MedicationScheduleEntity(UUID id, PatientEntity patient, String medicineName, OffsetDateTime startAt, OffsetDateTime endAt, long frequencySeconds) {
-        this.id = id;
-        this.patient = patient;
-        this.medicineName = medicineName;
-        this.startAt = startAt;
-        this.endAt = endAt;
-        this.frequencySeconds = frequencySeconds;
-    }
+    private boolean active;
 
 }

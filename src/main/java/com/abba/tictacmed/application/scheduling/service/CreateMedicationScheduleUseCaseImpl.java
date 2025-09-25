@@ -37,7 +37,7 @@ public class CreateMedicationScheduleUseCaseImpl implements CreateMedicationSche
                 Objects.requireNonNull(cmd.medicineName(), "medicineName"),
                 Objects.requireNonNull(cmd.startAt(), "startAt"),
                 Objects.requireNonNull(cmd.endAt(), "endAt"),
-                Duration.ofSeconds(cmd.frequencySeconds())
+                Duration.ofSeconds(cmd.frequency().getSeconds())
         );
 
         schedule = scheduleRepository.save(schedule);

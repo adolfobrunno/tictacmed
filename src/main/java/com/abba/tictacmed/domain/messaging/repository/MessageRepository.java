@@ -4,7 +4,7 @@ import com.abba.tictacmed.domain.messaging.model.WhatsAppMessage;
 
 import java.util.Set;
 
-public interface WhatsAppMessageRepository {
+public interface MessageRepository {
 
     void save(WhatsAppMessage message);
 

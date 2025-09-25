@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class PatientRepositoryAdapter implements PatientRepository {
@@ -29,7 +28,7 @@ public class PatientRepositoryAdapter implements PatientRepository {
     }
 
     @Override
-    public Optional<Patient> findById(UUID id) {
+    public Optional<Patient> findById(String id) {
         return jpaRepository.findById(id).map(PersistenceMappers::toDomain);
     }
 

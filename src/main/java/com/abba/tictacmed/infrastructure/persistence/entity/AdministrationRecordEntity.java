@@ -1,35 +1,28 @@
 package com.abba.tictacmed.infrastructure.persistence.entity;
 
 import com.abba.tictacmed.domain.scheduling.model.AdministrationStatus;
-import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Entity
 @Data
-@Table(name = "administration_record")
+@Document(collection = "administration_record")
 public class AdministrationRecordEntity {
 
     @Id
-    @Column(name = "id", nullable = false, columnDefinition = "BINARY(16)")
-    @JdbcTypeCode(SqlTypes.BINARY)
     private UUID id;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "schedule_id", nullable = false, columnDefinition = "BINARY(16)")
+    @DBRef
     private MedicationScheduleEntity schedule;
 
-    @Column(name = "scheduled_at", nullable = false)
     private OffsetDateTime scheduledAt;
 
-    @Column(name = "confirmed_at")
     private OffsetDateTime confirmedAt;
 
-    @Enumerated(EnumType.STRING)
     private AdministrationStatus status;
 
     protected AdministrationRecordEntity() {

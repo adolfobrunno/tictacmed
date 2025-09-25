@@ -3,10 +3,10 @@ package com.abba.tictacmed.application.messaging.service;
 import com.abba.tictacmed.application.messaging.command.RegisterMessageReceivedCommand;
 import com.abba.tictacmed.application.messaging.usecases.RegisterMessageReceived;
 import com.abba.tictacmed.domain.messaging.model.WhatsAppMessage;
-import com.abba.tictacmed.domain.messaging.repository.WhatsAppMessageRepository;
-import jakarta.transaction.Transactional;
+import com.abba.tictacmed.domain.messaging.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -14,13 +14,13 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RegisterMessageReceivedImpl implements RegisterMessageReceived {
 
-    private final WhatsAppMessageRepository whatsAppMessageRepository;
+    private final MessageRepository messageRepository;
 
     @Transactional
     @Override
     public void execute(RegisterMessageReceivedCommand cmd) {
         Objects.requireNonNull(cmd, "cmd");
-        WhatsAppMessage message = WhatsAppMessage.register(cmd.messageId(), cmd.from(), cmd.body());
-        whatsAppMessageRepository.save(message);
+        WhatsAppMessage message = WhatsAppMessage.register(cmd.messageId(), cmd.from(), cmd.contact(), cmd.body());
+        messageRepository.save(message);
     }
 }

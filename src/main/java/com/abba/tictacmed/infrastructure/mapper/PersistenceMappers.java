@@ -28,7 +28,9 @@ public final class PersistenceMappers {
                 schedule.getMedicineName(),
                 schedule.getStartAt(),
                 schedule.getEndAt(),
-                schedule.getFrequency().getSeconds()
+                schedule.getFrequency().getSeconds(),
+                schedule.isRecurring(),
+                schedule.isActive()
         );
     }
 
@@ -40,7 +42,9 @@ public final class PersistenceMappers {
                 entity.getStartAt(),
                 entity.getEndAt(),
                 Duration.ofSeconds(entity.getFrequencySeconds()),
-                records.stream().map(e -> new MedicationSchedule.AdministrationRecord(entity.getMedicineName(), e.getScheduledAt(), e.getConfirmedAt(), e.getStatus())).toList()
+                records.stream().map(e -> new MedicationSchedule.AdministrationRecord(entity.getMedicineName(), e.getScheduledAt(), e.getConfirmedAt(), e.getStatus())).toList(),
+                entity.isRecurring(),
+                entity.isActive()
         );
     }
 

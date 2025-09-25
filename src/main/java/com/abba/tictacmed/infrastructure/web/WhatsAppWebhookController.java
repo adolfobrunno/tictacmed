@@ -18,7 +18,7 @@ import java.util.Map;
 @RequestMapping("/webhooks/whatsapp")
 public class WhatsAppWebhookController {
 
-    private static final Logger log = LoggerFactory.getLogger(SchedulingController.class);
+    private static final Logger log = LoggerFactory.getLogger(WhatsAppWebhookController.class);
 
     private final WhatsAppProperties props;
     private final RegisterMessageReceived registerMessageReceived;
@@ -63,25 +63,38 @@ public class WhatsAppWebhookController {
         }
         try {
             JsonNode root = objectMapper.readTree(body);
-            // Typical structure from Meta: entry[].changes[].value.messages[]
+            // Typical structure from Meta: entry[].changes[].value.messages[], value.contacts[]
             if (root.has("entry") && root.get("entry").isArray()) {
                 for (JsonNode entry : root.get("entry")) {
                     JsonNode changes = entry.path("changes");
                     if (!changes.isArray()) continue;
                     for (JsonNode change : changes) {
                         JsonNode value = change.path("value");
+
+                        // Extrai nome do contato do primeiro elemento de contacts[]
+                        String contactName = null;
+                        JsonNode contacts = value.path("contacts");
+                        if (contacts.isArray() && !contacts.isEmpty()) {
+                            contactName = contacts.get(0).path("profile").path("name").asText(null);
+                        }
+
                         JsonNode messages = value.path("messages");
                         if (!messages.isArray()) continue;
                         for (JsonNode msg : messages) {
                             String messageId = text(msg, "id");
                             String from = text(msg, "from");
                             String bodyText = msg.path("text").path("body").asText(null);
+
+                            // Adiciona ao log o nome do contato, se disponível
                             if (messageId == null || from == null || bodyText == null) {
-                                log.debug("Skipping message due to missing fields: id={} from={} textPresent={}", messageId, mask(from), bodyText != null);
+                                log.debug("Skipping message due to missing fields: id={} from={} textPresent={} contactName={}", messageId, mask(from), bodyText != null, contactName);
                                 continue;
                             }
-                            registerMessageReceived.execute(new RegisterMessageReceivedCommand(messageId, from, bodyText));
-                            log.info("Persisted WhatsApp message id={} from={} length={}", messageId, mask(from), bodyText.length());
+
+                            // Ajuste: Passe o nome como argumento (ou persista como precisar)
+                            registerMessageReceived.execute(new RegisterMessageReceivedCommand(messageId, from, bodyText, contactName));
+
+                            log.info("Persisted WhatsApp message id={} from={} contactName={} length={}", messageId, mask(from), contactName, bodyText.length());
                         }
                     }
                 }
@@ -91,6 +104,7 @@ public class WhatsAppWebhookController {
         } catch (Exception e) {
             log.error("Failed to process WhatsApp webhook: {}", e.getMessage(), e);
         }
+
         return ResponseEntity.ok().build();
     }
 

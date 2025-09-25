@@ -2,27 +2,27 @@ package com.abba.tictacmed.infrastructure.messaging.whatsapp;
 
 import com.abba.tictacmed.domain.messaging.service.NotificationSender;
 import com.abba.tictacmed.domain.patient.model.Patient;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
  * Simple WhatsApp notification sender adapter. For now, it logs the message that would be sent.
  * It is controlled by properties (enabled flag) to avoid external calls in tests and local runs.
  */
+@RequiredArgsConstructor
 public class WhatsAppNotificationSender implements NotificationSender {
+
     private static final Logger log = LoggerFactory.getLogger(WhatsAppNotificationSender.class);
-    private static final DateTimeFormatter ISO_FMT = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+    private static final DateTimeFormatter ISO_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     private final WhatsAppProperties properties;
+    private final WhatsAppClient whatsAppClient;
 
-    public WhatsAppNotificationSender(WhatsAppProperties properties) {
-        this.properties = Objects.requireNonNull(properties);
-    }
 
     @Override
     public void sendMedicationReminder(UUID scheduleId, Patient patient, String medicineName, OffsetDateTime scheduledAt) {
@@ -36,8 +36,8 @@ public class WhatsAppNotificationSender implements NotificationSender {
                 .replace("{medicineName}", String.valueOf(medicineName))
                 .replace("{scheduledAt}", ISO_FMT.format(scheduledAt));
         log.info("Sending WhatsApp message from={} to={} body={}", safe(properties.getFromNumber()), safe(patient.getContact()), body);
-        // Here you would integrate with a provider SDK/API (e.g., Twilio/Meta), handling errors and retries.
-        // TODO Implement this.
+
+        whatsAppClient.sendText(patient.getContact(), body);
     }
 
     private String safe(String s) {
