@@ -2,6 +2,7 @@ package com.abba.tictacmed.infrastructure.scheduling;
 
 import com.abba.tictacmed.domain.scheduling.repository.MedicationScheduleRepository;
 import com.abba.tictacmed.domain.scheduling.service.SchedulingService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,20 +11,13 @@ import org.springframework.stereotype.Component;
 import java.time.OffsetDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduledReminderJob {
     private static final Logger log = LoggerFactory.getLogger(ScheduledReminderJob.class);
 
     private final MedicationScheduleRepository scheduleRepository;
     private final SchedulingService schedulingService;
     private final SchedulerProperties properties;
-
-    public ScheduledReminderJob(MedicationScheduleRepository scheduleRepository,
-                                SchedulingService schedulingService,
-                                SchedulerProperties properties) {
-        this.scheduleRepository = scheduleRepository;
-        this.schedulingService = schedulingService;
-        this.properties = properties;
-    }
 
     /**
      * Periodically scans schedules and sends WhatsApp reminders for the next due slot,

@@ -8,6 +8,10 @@ public record MessageReceived(@JsonProperty(required = true) MessageReceivedType
                               @JsonProperty(required = true) String medicine,
                               @JsonProperty(required = true) OffsetDateTime start,
                               @JsonProperty(required = true) OffsetDateTime end,
-                              @JsonProperty(required = true) long frequency,
-                              @JsonProperty(required = true) boolean recurring) {
+                              @JsonProperty(required = true) Long frequency,
+                              @JsonProperty(required = true) Boolean recurring) {
+
+    public MessageReceived(MessageReceivedType type, String medicine) {
+        this(type, medicine, null, null, null, null);
+    }
 }

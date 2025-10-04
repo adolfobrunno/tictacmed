@@ -3,6 +3,8 @@ package com.abba.tictacmed.infrastructure.messaging.whatsapp;
 import com.abba.tictacmed.infrastructure.messaging.whatsapp.dto.MessageReceived;
 import com.abba.tictacmed.infrastructure.messaging.whatsapp.dto.MessageReceivedType;
 import com.abba.tictacmed.infrastructure.openai.OpenAiApiHelper;
+import com.abba.tictacmed.infrastructure.utils.Buttons;
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +22,15 @@ public class MessageReceivedResolver {
             return null;
         }
 
+        return Try.of(() -> readAsButton(message))
+                .getOrElse(() -> readAsLLM(message));
+    }
+
+    private MessageReceived readAsButton(String message) {
+        return Buttons.parseReply(message);
+    }
+
+    private MessageReceived readAsLLM(String message) {
         return openAiApiHelper.sendPrompt("""
                                     You are an expert in understanding user intents from short text messages.
                                     Given the following message, classify it into one of the following categories:

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record CreateMedicationScheduleResult(
         UUID id,
-        UUID patientId,
+        String patientId,
         String medicineName,
         OffsetDateTime startAt,
         OffsetDateTime endAt,

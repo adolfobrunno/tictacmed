@@ -37,7 +37,7 @@ public class MedicationScheduleRepositoryAdapter implements MedicationScheduleRe
     @Transactional
     public MedicationSchedule save(MedicationSchedule schedule) {
         PatientEntity patientEntity = patientRepo.findById(schedule.getPatient().getContact())
-                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + schedule.getPatient().getId()));
+                .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + schedule.getPatient().getContact()));
         MedicationScheduleEntity entity = PersistenceMappers.toEntity(schedule, patientEntity);
         MedicationScheduleEntity saved = scheduleRepo.save(entity);
         // Simple approach: clear and re-save administration records for this schedule idempotently
@@ -58,19 +58,8 @@ public class MedicationScheduleRepositoryAdapter implements MedicationScheduleRe
     }
 
     @Override
-    public Optional<MedicationSchedule> findById(UUID id) {
-        return scheduleRepo.findById(id).map(entity -> {
-            PatientEntity peProxy = entity.getPatient();
-            PatientEntity pe = patientRepo.findById(peProxy.getContact()).orElseThrow();
-            Patient patient = PersistenceMappers.toDomain(pe);
-            List<AdministrationRecordEntity> records = recordRepo.findBySchedule_Id(entity.getId());
-            return PersistenceMappers.toDomain(entity, patient, records);
-        });
-    }
-
-    @Override
-    public List<MedicationSchedule> findByPatientId(UUID patientId) {
-        return scheduleRepo.findByPatient_Id(patientId).stream().map(entity -> {
+    public List<MedicationSchedule> findByPatientId(String patientId) {
+        return scheduleRepo.findByPatient_Contact(patientId).stream().map(entity -> {
             PatientEntity peProxy = entity.getPatient();
             PatientEntity pe = patientRepo.findById(peProxy.getContact()).orElseThrow();
             Patient patient = PersistenceMappers.toDomain(pe);
@@ -91,7 +80,17 @@ public class MedicationScheduleRepositoryAdapter implements MedicationScheduleRe
     }
 
     @Override
+    public Optional<MedicationSchedule> findById(UUID id) {
+        return scheduleRepo.findById(id).map(entity -> {
+            PatientEntity pe = patientRepo.findById(entity.getPatient().getContact()).orElseThrow();
+            Patient patient = PersistenceMappers.toDomain(pe);
+            List<AdministrationRecordEntity> records = recordRepo.findBySchedule_Id(entity.getId());
+            return PersistenceMappers.toDomain(entity, patient, records);
+        });
+    }
+
+    @Override
     public Optional<MedicationSchedule.AdministrationRecord> findNextScheduled(Patient patient) {
-        return recordRepo.findTopOneBySchedule_Patient_IdAndStatusOrderByScheduledAtAsc(patient.getId(), AdministrationStatus.SCHEDULED).map(PersistenceMappers::toDomain);
+        return recordRepo.findTopOneBySchedule_Patient_ContactAndStatusOrderByScheduledAtAsc(patient.getContact(), AdministrationStatus.SCHEDULED).map(PersistenceMappers::toDomain);
     }
 }

@@ -83,18 +83,32 @@ public class WhatsAppWebhookController {
                         for (JsonNode msg : messages) {
                             String messageId = text(msg, "id");
                             String from = text(msg, "from");
-                            String bodyText = msg.path("text").path("body").asText(null);
+
+                            // Support both text and interactive (button/list) messages
+                            String bodyText = null;
+                            String type = msg.path("type").asText(null);
+                            if ("interactive".equals(type)) {
+                                JsonNode interactive = msg.path("interactive");
+                                // Prefer human-readable title; fallback to id
+                                String btnTitle = interactive.path("button_reply").path("title").asText(null);
+                                String btnId = interactive.path("button_reply").path("id").asText(null);
+                                String listTitle = interactive.path("list_reply").path("title").asText(null);
+                                String listId = interactive.path("list_reply").path("id").asText(null);
+                                bodyText = firstNonBlank(btnId, btnTitle, listTitle, listId);
+                            } else {
+                                bodyText = msg.path("text").path("body").asText(null);
+                            }
 
                             // Adiciona ao log o nome do contato, se disponível
-                            if (messageId == null || from == null || bodyText == null) {
-                                log.debug("Skipping message due to missing fields: id={} from={} textPresent={} contactName={}", messageId, mask(from), bodyText != null, contactName);
+                            if (messageId == null || from == null || bodyText == null || bodyText.isBlank()) {
+                                log.debug("Skipping message due to missing fields: id={} from={} textPresent={} contactName={} type={}", messageId, mask(from), bodyText != null && !bodyText.isBlank(), contactName, type);
                                 continue;
                             }
 
                             // Ajuste: Passe o nome como argumento (ou persista como precisar)
                             registerMessageReceived.execute(new RegisterMessageReceivedCommand(messageId, from, bodyText, contactName));
 
-                            log.info("Persisted WhatsApp message id={} from={} contactName={} length={}", messageId, mask(from), contactName, bodyText.length());
+                            log.info("Persisted WhatsApp message id={} from={} contactName={} type={} length={}", messageId, mask(from), contactName, type == null ? "text" : type, bodyText.length());
                         }
                     }
                 }
@@ -117,5 +131,13 @@ public class WhatsAppWebhookController {
         if (v == null || v.isBlank()) return "";
         if (v.length() <= 6) return "***";
         return v.substring(0, 3) + "***" + v.substring(v.length() - 3);
+    }
+
+    private String firstNonBlank(String... vals) {
+        if (vals == null) return null;
+        for (String s : vals) {
+            if (s != null && !s.isBlank()) return s;
+        }
+        return null;
     }
 }

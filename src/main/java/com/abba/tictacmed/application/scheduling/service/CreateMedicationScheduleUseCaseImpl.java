@@ -44,7 +44,7 @@ public class CreateMedicationScheduleUseCaseImpl implements CreateMedicationSche
 
         return new CreateMedicationScheduleResult(
                 schedule.getId(),
-                schedule.getPatient().getId(),
+                schedule.getPatient().getContact(),
                 schedule.getMedicineName(),
                 schedule.getStartAt(),
                 schedule.getEndAt(),

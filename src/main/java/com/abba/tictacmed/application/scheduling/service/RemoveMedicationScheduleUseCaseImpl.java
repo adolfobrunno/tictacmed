@@ -38,7 +38,7 @@ public class RemoveMedicationScheduleUseCaseImpl implements RemoveMedicationSche
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + cmd.patientContact()));
 
         // Fetch all schedules for this patient and cancel those matching the medicine name
-        var schedules = scheduleRepository.findByPatientId(patient.getId());
+        var schedules = scheduleRepository.findByPatientId(patient.getContact());
         for (MedicationSchedule schedule : schedules) {
             if (schedule.getMedicineName().equalsIgnoreCase(cmd.medicineName()) && schedule.isActive()) {
                 schedule.cancelPendingAdministrations();

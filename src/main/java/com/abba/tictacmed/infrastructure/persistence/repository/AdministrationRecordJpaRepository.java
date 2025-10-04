@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface AdministrationRecordJpaRepository extends MongoRepository<AdministrationRecordEntity, UUID> {
     List<AdministrationRecordEntity> findBySchedule_Id(UUID scheduleId);
 
-    Optional<AdministrationRecordEntity> findTopOneBySchedule_Patient_IdAndStatusOrderByScheduledAtAsc(UUID patientId, AdministrationStatus status);
+    Optional<AdministrationRecordEntity> findTopOneBySchedule_Patient_ContactAndStatusOrderByScheduledAtAsc(String patientId, AdministrationStatus status);
 }

@@ -86,35 +86,29 @@ public final class MedicationSchedule {
     }
 
     public AdministrationRecord confirmAdministration(OffsetDateTime scheduledTime, OffsetDateTime confirmedAt) {
-        Objects.requireNonNull(scheduledTime, "scheduledTime is required");
-        if (scheduledTime.isBefore(startAt) || scheduledTime.isAfter(endAt)) {
-            throw new IllegalArgumentException("scheduledTime out of bounds");
-        }
-        long fromStart = Duration.between(startAt, scheduledTime).getSeconds();
-        long step = frequency.getSeconds();
-        if (fromStart % step != 0) throw new IllegalArgumentException("scheduledTime must align with frequency grid");
-        return administrations.stream().filter(a -> a.scheduledAt().isEqual(scheduledTime)).findFirst()
+        validateScheduledTime(scheduledTime);
+
+        // Update existing record or create a new confirmed one
+        return findRecordAt(scheduledTime)
+                .map(existing -> new AdministrationRecord(existing.medicineName(), existing.scheduledAt(), confirmedAt, AdministrationStatus.CONFIRMED))
                 .orElseGet(() -> {
-                    AdministrationRecord rec = new AdministrationRecord(this.getMedicineName(), scheduledTime, confirmedAt == null ? OffsetDateTime.now() : confirmedAt, AdministrationStatus.CONFIRMED);
-                    administrations.add(rec);
-                    return rec;
+                    OffsetDateTime confirmationTime = (confirmedAt == null ? OffsetDateTime.now() : confirmedAt);
+                    AdministrationRecord created = new AdministrationRecord(this.getMedicineName(), scheduledTime, confirmationTime, AdministrationStatus.CONFIRMED);
+                    administrations.add(created);
+                    return created;
                 });
     }
 
     public AdministrationRecord skipAdministration(OffsetDateTime scheduledTime) {
-        Objects.requireNonNull(scheduledTime, "scheduledTime is required");
-        if (scheduledTime.isBefore(startAt) || scheduledTime.isAfter(endAt)) {
-            throw new IllegalArgumentException("scheduledTime out of bounds");
-        }
-        long fromStart = Duration.between(startAt, scheduledTime).getSeconds();
-        long step = frequency.getSeconds();
-        if (fromStart % step != 0) throw new IllegalArgumentException("scheduledTime must align with frequency grid");
-        // If already has a record (any status), just return it
-        return administrations.stream().filter(a -> a.scheduledAt().isEqual(scheduledTime)).findFirst()
+        validateScheduledTime(scheduledTime);
+
+        // Update existing record or create a new skipped one
+        return findRecordAt(scheduledTime)
+                .map(existing -> new AdministrationRecord(existing.medicineName(), existing.scheduledAt(), null, AdministrationStatus.SKIPPED))
                 .orElseGet(() -> {
-                    AdministrationRecord rec = new AdministrationRecord(this.getMedicineName(), scheduledTime, null, AdministrationStatus.SKIPPED);
-                    administrations.add(rec);
-                    return rec;
+                    AdministrationRecord created = new AdministrationRecord(this.getMedicineName(), scheduledTime, null, AdministrationStatus.SKIPPED);
+                    administrations.add(created);
+                    return created;
                 });
     }
 
@@ -133,6 +127,27 @@ public final class MedicationSchedule {
                 administrations.set(i, new AdministrationRecord(ar.medicineName(), ar.scheduledAt(), ar.confirmedAt(), AdministrationStatus.CANCELED));
             }
         }
+    }
+
+    // ---- Helpers (readability) ----
+    private void validateScheduledTime(OffsetDateTime scheduledTime) {
+        Objects.requireNonNull(scheduledTime, "scheduledTime is required");
+        if (scheduledTime.isBefore(startAt) || scheduledTime.isAfter(endAt)) {
+            throw new IllegalArgumentException("scheduledTime out of bounds");
+        }
+        if (!isAligned(scheduledTime)) {
+            throw new IllegalArgumentException("scheduledTime must align with frequency grid");
+        }
+    }
+
+    private boolean isAligned(OffsetDateTime scheduledTime) {
+        long fromStart = Duration.between(startAt, scheduledTime).getSeconds();
+        long step = frequency.getSeconds();
+        return fromStart % step == 0;
+    }
+
+    private Optional<AdministrationRecord> findRecordAt(OffsetDateTime scheduledTime) {
+        return administrations.stream().filter(a -> a.scheduledAt().isEqual(scheduledTime)).findFirst();
     }
 
     public record AdministrationRecord(String medicineName, OffsetDateTime scheduledAt, OffsetDateTime confirmedAt,

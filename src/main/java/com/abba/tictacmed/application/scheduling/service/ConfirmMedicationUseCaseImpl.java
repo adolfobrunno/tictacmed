@@ -40,7 +40,7 @@ public class ConfirmMedicationUseCaseImpl implements ConfirmMedicationUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + cmd.patientContact()));
 
         // Load schedules for patient and find the next scheduled record for the given medicine
-        var schedules = scheduleRepository.findByPatientId(patient.getId());
+        var schedules = scheduleRepository.findByPatientId(patient.getContact());
         MedicationSchedule targetSchedule = schedules.stream()
                 .filter(s -> s.getMedicineName().equalsIgnoreCase(cmd.medicineName()))
                 .min(Comparator.comparing(MedicationSchedule::getStartAt))
@@ -54,7 +54,7 @@ public class ConfirmMedicationUseCaseImpl implements ConfirmMedicationUseCase {
         }
         var scheduledAt = nextDueOpt.get();
 
-        // Update the record status using domain methods (no reflection)
+        // Update the record status using domain methods
         if (cmd.confirmed()) {
             targetSchedule.confirmAdministration(scheduledAt, OffsetDateTime.now());
         } else {

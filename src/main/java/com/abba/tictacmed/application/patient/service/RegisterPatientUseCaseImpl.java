@@ -23,6 +23,6 @@ public class RegisterPatientUseCaseImpl implements RegisterPatientUseCase {
         Objects.requireNonNull(cmd, "cmd");
         Patient patient = Patient.register(cmd.name(), cmd.contact());
         patient = patientRepository.save(patient);
-        return new RegisterPatientResult(patient.getId(), patient.getName(), patient.getContact());
+        return new RegisterPatientResult(patient.getName(), patient.getContact());
     }
 }

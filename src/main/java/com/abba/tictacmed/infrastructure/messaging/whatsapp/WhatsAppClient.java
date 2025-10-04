@@ -1,6 +1,7 @@
 package com.abba.tictacmed.infrastructure.messaging.whatsapp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whatsapp.api.domain.messages.Button;
 import com.whatsapp.api.domain.messages.TextMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,26 +50,109 @@ public class WhatsAppClient {
         log.info("WhatsApp TEXT sent to={}", safe(to));
     }
 
-    /**
-     * Sends a message with a list of buttons.
-     * Minimal implementation formats buttons as a numbered list and sends as plain text.
-     * If you want true interactive buttons later, swap internals to Interactive message payload.
-     */
-    public void sendTextWithButtons(String to, String body, List<String> buttons) {
+    public void sendInteractive(String to, String body, List<Button> buttons) {
         Objects.requireNonNull(to, "to");
         Objects.requireNonNull(body, "body");
         Objects.requireNonNull(buttons, "buttons");
 
-        String formatted = formatWithButtons(body, buttons);
-
         if (!properties.isEnabled()) {
-            log.info("[WhatsApp disabled] Would send BUTTONS to={} body={} buttons={}", safe(to), safe(body), buttons);
+            log.info("[WhatsApp disabled] Would send INTERACTIVE to={} body={} buttons={}", safe(to), safe(body),
+                    buttons.stream().map(b -> safe(extractButtonTitle(b))).toList());
             return;
         }
 
-        TextMessage textMessage = new TextMessage().setBody(formatted);
-        sendViaMetaApi(to, textMessage);
-        log.debug("WhatsApp BUTTONS (as text) sent to={}", safe(to));
+        try {
+            Map<String, Object> payload = new LinkedHashMap<>();
+            payload.put("messaging_product", "whatsapp");
+            payload.put("to", to);
+            payload.put("type", "interactive");
+
+            Map<String, Object> interactive = new LinkedHashMap<>();
+            interactive.put("type", "button");
+
+            Map<String, Object> bodyMap = new LinkedHashMap<>();
+            bodyMap.put("text", body);
+            interactive.put("body", bodyMap);
+
+            Map<String, Object> action = new LinkedHashMap<>();
+
+            // Build buttons as reply buttons according to WhatsApp Cloud API
+            // https://developers.facebook.com/docs/whatsapp/cloud-api/reference/messages#interactive-object
+//            List<Map<String, Object>> btnList = new ArrayList<>();
+//            for (int i = 0; i < buttons.size(); i++) {
+//                Button b = buttons.get(i);
+//                String title = extractButtonTitle(b);
+//                if (title == null || title.isBlank()) {
+//                    title = "Option " + (i + 1);
+//                }
+//                String id = extractButtonId(b);
+//                if (id == null || id.isBlank()) {
+//                    id = "opt_" + (i + 1);
+//                }
+//                Map<String, Object> btn = new LinkedHashMap<>();
+//                btn.put("type", "reply");
+//                Map<String, Object> reply = new LinkedHashMap<>();
+//                reply.put("id", id);
+//                reply.put("title", title);
+//                btn.put("reply", reply);
+//                btnList.add(btn);
+//            }
+            action.put("buttons", buttons);
+            interactive.put("action", action);
+
+            payload.put("interactive", interactive);
+
+            String json = objectMapper.writeValueAsString(payload);
+
+            String phoneNumberId = properties.getFromNumber();
+            String url = "https://graph.facebook.com/v20.0/" + phoneNumberId + "/messages";
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Authorization", "Bearer " + properties.getAccessToken())
+                    .addHeader("Content-Type", "application/json")
+                    .post(RequestBody.create(json, JSON))
+                    .build();
+
+            log.info("Sending INTERACTIVE message to WhatsApp: {}", json);
+            log.info("URL: {}", request.url());
+            log.info("Headers: {}", request.headers());
+
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    String errorBody = response.body() != null ? response.body().string() : "";
+                    log.error("WhatsApp API call failed: code={} body={}", response.code(), errorBody);
+                }
+                log.info("WhatsApp API call response: code={} body={}", response.code(), response.body());
+            }
+        } catch (IOException e) {
+            log.error("Error calling WhatsApp API (interactive)", e);
+        }
+    }
+
+    private String extractButtonTitle(Button button) {
+        String val = callStringGetter(button, "getTitle", "getText", "getBody");
+        return val;
+    }
+
+    private String extractButtonId(Button button) {
+        String val = callStringGetter(button, "getId", "getPayload", "getValue");
+        return val;
+    }
+
+    private String callStringGetter(Object target, String... methodNames) {
+        for (String m : methodNames) {
+            try {
+                java.lang.reflect.Method method = target.getClass().getMethod(m);
+                Object result = method.invoke(target);
+                if (result instanceof String s) {
+                    return s;
+                }
+            } catch (Exception ignored) {
+                // try next
+            }
+        }
+        return null;
     }
 
     private void sendViaMetaApi(String to, TextMessage textMessage) {
@@ -108,19 +192,6 @@ public class WhatsAppClient {
         } catch (IOException e) {
             log.error("Error calling WhatsApp API", e);
         }
-    }
-
-    private String formatWithButtons(String body, List<String> buttons) {
-        StringBuilder sb = new StringBuilder(body == null ? "" : body.trim());
-        if (buttons != null && !buttons.isEmpty()) {
-            sb.append("\n\n");
-            int idx = 1;
-            for (String b : buttons) {
-                if (b == null || b.isBlank()) continue;
-                sb.append(idx++).append(") ").append(b.trim()).append("\n");
-            }
-        }
-        return sb.toString();
     }
 
     private String safe(String s) {

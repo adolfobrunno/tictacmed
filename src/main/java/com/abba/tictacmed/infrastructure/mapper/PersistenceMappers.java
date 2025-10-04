@@ -14,11 +14,11 @@ public final class PersistenceMappers {
     }
 
     public static PatientEntity toEntity(Patient patient) {
-        return new PatientEntity(patient.getId(), patient.getName(), patient.getContact());
+        return new PatientEntity(patient.getName(), patient.getContact());
     }
 
     public static Patient toDomain(PatientEntity entity) {
-        return Patient.fromExisting(entity.getId(), entity.getName(), entity.getContact());
+        return Patient.fromExisting(entity.getName(), entity.getContact());
     }
 
     public static MedicationScheduleEntity toEntity(MedicationSchedule schedule, PatientEntity patientEntity) {

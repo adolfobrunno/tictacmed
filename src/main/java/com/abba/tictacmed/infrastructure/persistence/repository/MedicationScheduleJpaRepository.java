@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface MedicationScheduleJpaRepository extends MongoRepository<MedicationScheduleEntity, UUID> {
-    List<MedicationScheduleEntity> findByPatient_Id(UUID patientId);
+    List<MedicationScheduleEntity> findByPatient_Contact(String patientId);
 
     List<MedicationScheduleEntity> findAll();
 }

@@ -2,12 +2,15 @@ package com.abba.tictacmed.infrastructure.messaging.whatsapp;
 
 import com.abba.tictacmed.domain.messaging.service.NotificationSender;
 import com.abba.tictacmed.domain.patient.model.Patient;
+import com.abba.tictacmed.infrastructure.utils.Buttons;
+import com.whatsapp.api.domain.messages.Button;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -37,7 +40,10 @@ public class WhatsAppNotificationSender implements NotificationSender {
                 .replace("{scheduledAt}", ISO_FMT.format(scheduledAt));
         log.info("Sending WhatsApp message from={} to={} body={}", safe(properties.getFromNumber()), safe(patient.getContact()), body);
 
-        whatsAppClient.sendText(patient.getContact(), body);
+        Button buttonConfirm = Buttons.createConfirmButton(patient, medicineName);
+        Button buttonSkip = Buttons.createSkipButton(patient, medicineName);
+
+        whatsAppClient.sendInteractive(patient.getContact(), body, List.of(buttonConfirm, buttonSkip));
     }
 
     private String safe(String s) {

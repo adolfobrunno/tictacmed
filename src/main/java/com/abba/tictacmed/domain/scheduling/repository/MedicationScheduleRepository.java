@@ -10,11 +10,11 @@ import java.util.UUID;
 public interface MedicationScheduleRepository {
     MedicationSchedule save(MedicationSchedule schedule);
 
-    Optional<MedicationSchedule> findById(UUID id);
-
-    List<MedicationSchedule> findByPatientId(UUID patientId);
+    List<MedicationSchedule> findByPatientId(String patientId);
 
     List<MedicationSchedule> findAll();
+
+    Optional<MedicationSchedule> findById(UUID id);
 
     Optional<MedicationSchedule.AdministrationRecord> findNextScheduled(Patient patient);
 }
