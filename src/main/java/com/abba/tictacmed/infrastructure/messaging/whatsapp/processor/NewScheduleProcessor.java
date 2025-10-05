@@ -36,7 +36,8 @@ public class NewScheduleProcessor implements SimpleProcessor {
 
         RegisterPatientResult newPatient = registerPatientUseCase.execute(new RegisterPatientCommand(
                 context.contactName(),
-                context.contactNumber()
+                context.contactNumber(),
+                true
         ));
 
         CreateMedicationScheduleResult createMedicationScheduleResult = createNewMedicationScheduleUseCase.execute(

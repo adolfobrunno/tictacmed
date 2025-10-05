@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cadastrar Farmácia - TicTacMed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            width: 420px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #2b4c7e;
+            font-size: 20px;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 4px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccd6f6;
+            border-radius: 8px;
+        }
+
+        .btn {
+            margin-top: 16px;
+            width: 100%;
+            padding: 12px;
+            border: 0;
+            border-radius: 8px;
+            background: #2b4c7e;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 12px;
+            color: #2b4c7e;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Cadastrar Farmácia</h1>
+    <form method="post" action="/ui/pharmacies/register" th:object="${form}">
+        <label for="name">Nome da farmácia</label>
+        <input id="name" name="name" type="text" th:value="*{name}" required/>
+
+        <label for="cnpj">CNPJ</label>
+        <input id="cnpj" name="cnpj" type="text" th:value="*{cnpj}" placeholder="00.000.000/0000-00" required/>
+
+        <hr/>
+        <h2>Usuário administrador</h2>
+        <label for="adminUsername">Usuário (login)</label>
+        <input id="adminUsername" name="adminUsername" type="text" th:value="*{adminUsername}" required/>
+
+        <label for="adminPassword">Senha</label>
+        <input id="adminPassword" name="adminPassword" type="password" th:value="*{adminPassword}" required/>
+
+        <button class="btn" type="submit">Cadastrar</button>
+    </form>
+    <a href="/login">Já tenho cadastro</a>
+</div>
+</body>
+</html>

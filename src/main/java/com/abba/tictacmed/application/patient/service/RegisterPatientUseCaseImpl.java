@@ -16,13 +16,30 @@ import java.util.Objects;
 public class RegisterPatientUseCaseImpl implements RegisterPatientUseCase {
 
     private final PatientRepository patientRepository;
+    private final ConfirmationCodeSender confirmationCodeSender;
 
     @Transactional
     @Override
     public RegisterPatientResult execute(RegisterPatientCommand cmd) {
         Objects.requireNonNull(cmd, "cmd");
-        Patient patient = Patient.register(cmd.name(), cmd.contact());
+
+        Patient patient;
+        if (cmd.selfRegistered()) {
+            // Patient initiated their own registration: active immediately
+            patient = Patient.selfRegister(cmd.name(), cmd.contact());
+        } else {
+            // Registration by attendant: pending and requires confirmation
+            String code = String.format("%06d", (int) (Math.random() * 1_000_000));
+            patient = Patient.registerPending(cmd.name(), cmd.contact(), code);
+        }
+
         patient = patientRepository.save(patient);
+
+        // Send confirmation code only if pending
+        if (!patient.isActive() && patient.getConfirmationCode() != null) {
+            confirmationCodeSender.sendCode(patient.getContact(), patient.getConfirmationCode());
+        }
+
         return new RegisterPatientResult(patient.getName(), patient.getContact());
     }
 }

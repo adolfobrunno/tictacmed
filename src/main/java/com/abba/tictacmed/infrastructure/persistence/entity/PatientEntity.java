@@ -11,13 +11,17 @@ public class PatientEntity {
     @Id
     private String contact;
     private String name;
+    private String status; // PENDING_CONFIRMATION or ACTIVE
+    private String confirmationCode; // nullable
 
     protected PatientEntity() {
     }
 
-    public PatientEntity(String name, String contact) {
+    public PatientEntity(String name, String contact, String status, String confirmationCode) {
         this.name = name;
         this.contact = contact;
+        this.status = status;
+        this.confirmationCode = confirmationCode;
     }
 
 }

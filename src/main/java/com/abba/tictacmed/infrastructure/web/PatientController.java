@@ -25,7 +25,7 @@ public class PatientController {
 
     @PostMapping
     public ResponseEntity<RegisterPatientResult> register(@RequestBody RegisterPatientRequest request) {
-        RegisterPatientResult result = registerPatientUseCase.execute(new RegisterPatientCommand(request.name(), request.contact()));
+        RegisterPatientResult result = registerPatientUseCase.execute(new RegisterPatientCommand(request.name(), request.contact(), false));
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

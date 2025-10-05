@@ -1,16 +1,31 @@
 package com.abba.tictacmed.infrastructure.utils;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public final class Durations {
 
     public static Duration parseFriendlyDurationToSeconds(String text) {
         if (text == null || text.isBlank()) throw new IllegalArgumentException("frequency is required");
-        String s = text.trim().toLowerCase();
-        // Backward compatibility: if it is purely digits, treat as seconds
+        String raw = text.trim();
+
+        // 1) Accept ISO-8601 duration strings like PT8H, P1D (case-insensitive)
+        String iso = raw.toUpperCase(Locale.ROOT);
+        if (iso.startsWith("P")) {
+            try {
+                return Duration.parse(iso);
+            } catch (IllegalArgumentException ignored) {
+                // fall through to friendly parser
+            }
+        }
+
+        String s = raw.toLowerCase(Locale.ROOT);
+        // 2) Backward compatibility: if it is purely digits, treat as seconds
         if (s.chars().allMatch(Character::isDigit)) {
             return Duration.ofSeconds(Long.parseLong(s));
         }
+
+        // 3) Friendly short formats: e.g., 8h, 12h, 30m, 1d, combinations like 1d12h
         long total = 0;
         int i = 0;
         int n = s.length();

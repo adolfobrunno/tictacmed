@@ -32,6 +32,10 @@ public class CreateMedicationScheduleUseCaseImpl implements CreateMedicationSche
         Patient patient = patientRepository.findByContact(patientContact)
                 .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientContact));
 
+        if (!patient.isActive()) {
+            throw new IllegalStateException("Paciente não está ativo. Conclua a confirmação do cadastro antes de criar agendamentos.");
+        }
+
         MedicationSchedule schedule = MedicationSchedule.create(
                 patient,
                 Objects.requireNonNull(cmd.medicineName(), "medicineName"),
