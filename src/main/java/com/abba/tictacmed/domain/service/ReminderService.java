@@ -1,13 +1,12 @@
 package com.abba.tictacmed.domain.service;
 
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.abba.tictacmed.domain.model.Medication;
 import com.abba.tictacmed.domain.model.Reminder;
 import com.abba.tictacmed.domain.model.User;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 
 public interface ReminderService {
 
