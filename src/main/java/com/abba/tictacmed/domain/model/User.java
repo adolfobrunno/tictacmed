@@ -1,16 +1,15 @@
 package com.abba.tictacmed.domain.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.Data;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "users")
 @CompoundIndex(name = "whatsapp_idx", def = "{'whatsappId': 1}", unique = true)
@@ -20,12 +19,20 @@ public class User {
     @Id
     private String id;
     @Indexed
-    private String whatsappId; // "5511999999999"
+    private String whatsappId;
     private String name;
     private Plan plan = Plan.FREE;
-    private LocalDateTime proUntil;
+    private OffsetDateTime proUntil;
+    private OffsetDateTime proSince;
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 
-    @DBRef(lazy = true) // ref para performance
+    @DBRef(lazy = true)
     private List<Medication> medications = new ArrayList<>();
+
+    public void enablePremium() {
+        this.plan = Plan.PREMIUM;
+        this.proSince = OffsetDateTime.now();
+        this.proUntil = OffsetDateTime.now().plusMonths(1);
+    }
 
 }

@@ -14,8 +14,7 @@ public class Medication {
 
     @Id
     private UUID id = UUID.randomUUID();
-    private String name; // "Paracetamol 500mg"
-    private String scheduledAt; // "08:00"
+    private String name;
 
     @DBRef private User user;
 

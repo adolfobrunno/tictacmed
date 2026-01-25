@@ -5,7 +5,8 @@ import com.abba.tictacmed.domain.model.User;
 public interface UserService {
 
     User register(String whatsappId, String nome);
-    boolean isPro(User usuario);
+
+    boolean isPro(User user);
     void upgradePro(String whatsappId);
 
 }

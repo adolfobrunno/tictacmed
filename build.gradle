@@ -41,6 +41,8 @@ dependencies {
     implementation 'com.github.Bindambc:whatsapp-business-java-api:v0.6.1'
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'io.vavr:vavr:0.10.4'
+    implementation 'org.dmfs:lib-recur:0.17.1'
+
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'

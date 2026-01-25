@@ -11,9 +11,8 @@ import com.abba.tictacmed.domain.model.User;
 
 public interface ReminderService {
 
-    Reminder scheduleMedication(User usuario, Medication med);
+    Reminder scheduleMedication(User usuario, Medication med, String rrule);
     Optional<OffsetDateTime> getNextDispatch(Reminder reminder);
-    void markAsTaken(String whatsappId, UUID reminderId);
     List<Reminder> getTodayPendingReminders();
 
 }
