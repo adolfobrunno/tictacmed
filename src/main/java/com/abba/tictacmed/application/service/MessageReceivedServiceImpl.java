@@ -19,10 +19,7 @@ public class MessageReceivedServiceImpl implements MessageReceivedService {
     }
 
     @Override
-    public void receiveMessage(String message, String whatsappId) {
-        MessageReceived messageReceived = new MessageReceived();
-        messageReceived.setWhatsappId(whatsappId);
-        messageReceived.setMessage(message);
+    public void receiveMessage(MessageReceived messageReceived) {
         messageReceived.setStatus(MessageReceivedStatus.PENDING);
         messageReceived.setReceivedAt(OffsetDateTime.now());
         messageReceivedRepository.save(messageReceived);

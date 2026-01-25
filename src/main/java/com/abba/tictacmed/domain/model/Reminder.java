@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -26,17 +27,22 @@ public class Reminder {
     @Id
     private UUID id = UUID.randomUUID();
     private OffsetDateTime nextDispatch;
-    private String rrule; // "FREQ=DAILY;BYHOUR=8"
+    private String rrule;
     @Indexed(name = "status_idx")
-    private ReminderStatus status = ReminderStatus.PENDING;
+    private ReminderStatus status = ReminderStatus.ACTIVE;
+    private OffsetDateTime createAt = OffsetDateTime.now();
+    private OffsetDateTime canceledAt;
+
 
     @DBRef private Medication medication;
 
     public void updateNextDispatch() {
 
+        ZoneId brazilZone = ZoneId.of("America/Sao_Paulo");
+
         try {
             RecurrenceRule rule = new RecurrenceRule(rrule);
-            RecurrenceSet recurrenceInstances = new OfRule(rule, DateTime.now(TimeZone.getDefault()));
+            RecurrenceSet recurrenceInstances = new OfRule(rule, DateTime.now(TimeZone.getTimeZone(brazilZone)));
             DateTime next = recurrenceInstances.iterator().next();
             this.nextDispatch = OffsetDateTime.of(LocalDateTime.ofInstant(new Date(next.getTimestamp()).toInstant(),
                             OffsetDateTime.now().getOffset()),
@@ -44,6 +50,11 @@ public class Reminder {
         } catch (InvalidRecurrenceRuleException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void cancelReminder() {
+        this.status = ReminderStatus.CANCELLED;
+        this.canceledAt = OffsetDateTime.now();
     }
 
 }

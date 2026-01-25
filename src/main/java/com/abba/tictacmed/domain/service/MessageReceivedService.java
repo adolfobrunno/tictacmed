@@ -6,10 +6,9 @@ import java.util.List;
 
 public interface MessageReceivedService {
 
-    void receiveMessage(String message, String whatsappId);
-
     void markAsProcessed(String id);
 
     List<MessageReceived> getPendingMessages();
 
+    void receiveMessage(MessageReceived messageReceived);
 }

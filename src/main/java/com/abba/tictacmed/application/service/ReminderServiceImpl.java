@@ -8,7 +8,6 @@ import com.abba.tictacmed.domain.repository.ReminderRepository;
 import com.abba.tictacmed.domain.service.ReminderService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
@@ -50,34 +49,9 @@ public class ReminderServiceImpl implements ReminderService {
         return reminderRepository.findPendingNextDispatch(OffsetDateTime.now(BRAZIL_ZONE));
     }
 
-    private OffsetDateTime buildNextDispatch(String scheduledAt) {
-        OffsetDateTime now = OffsetDateTime.now(BRAZIL_ZONE);
-        if (scheduledAt == null || scheduledAt.isBlank()) {
-            return now;
-        }
-        LocalTime time = LocalTime.parse(scheduledAt);
-        OffsetDateTime next = now.withHour(time.getHour()).withMinute(time.getMinute()).withSecond(0).withNano(0);
-        if (!next.isAfter(now)) {
-            next = next.plusDays(1);
-        }
-        return next;
-    }
-
-    private String buildDailyRrule(String scheduledAt) {
-        if (scheduledAt == null || scheduledAt.isBlank()) {
-            return "FREQ=DAILY";
-        }
-        LocalTime time = LocalTime.parse(scheduledAt);
-        return "FREQ=DAILY;BYHOUR=" + time.getHour() + ";BYMINUTE=" + time.getMinute();
-    }
-
-    private boolean belongsToWhatsapp(Reminder reminder, String whatsappId) {
-        if (whatsappId == null || whatsappId.isBlank()) {
-            return false;
-        }
-        if (reminder.getMedication() == null || reminder.getMedication().getUser() == null) {
-            return true;
-        }
-        return whatsappId.equals(reminder.getMedication().getUser().getWhatsappId());
+    @Override
+    public void cancelReminder(Reminder reminder) {
+        reminder.cancelReminder();
+        reminderRepository.save(reminder);
     }
 }

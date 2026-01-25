@@ -5,6 +5,6 @@ import com.abba.tictacmed.domain.model.User;
 
 public interface WhatsAppGateway {
 
-    void sendReminder(User user, Reminder reminder);
+    String sendReminder(User user, Reminder reminder);
 
 }

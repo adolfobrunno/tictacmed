@@ -1,8 +1,8 @@
 package com.abba.tictacmed.infrastructure.whatsapp;
 
-import com.abba.tictacmed.application.messaging.command.RegisterMessageReceivedCommand;
-import com.abba.tictacmed.application.messaging.usecases.RegisterMessageReceived;
-import com.abba.tictacmed.infrastructure.messaging.whatsapp.WhatsAppProperties;
+import com.abba.tictacmed.domain.model.MessageReceived;
+import com.abba.tictacmed.domain.service.MessageReceivedService;
+import com.abba.tictacmed.infrastructure.config.WhatsAppProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -21,14 +21,14 @@ public class WhatsAppWebhookController {
     private static final Logger log = LoggerFactory.getLogger(WhatsAppWebhookController.class);
 
     private final WhatsAppProperties props;
-    private final RegisterMessageReceived registerMessageReceived;
+    private final MessageReceivedService messageReceivedService;
     private final ObjectMapper objectMapper;
 
     public WhatsAppWebhookController(WhatsAppProperties props,
-                                     RegisterMessageReceived registerMessageReceived,
+                                     MessageReceivedService messageReceivedService,
                                      ObjectMapper objectMapper) {
         this.props = props;
-        this.registerMessageReceived = registerMessageReceived;
+        this.messageReceivedService = messageReceivedService;
         this.objectMapper = objectMapper;
     }
 
@@ -83,9 +83,10 @@ public class WhatsAppWebhookController {
                         for (JsonNode msg : messages) {
                             String messageId = text(msg, "id");
                             String from = text(msg, "from");
+                            String replyToMessageId = msg.path("context").path("id").asText(null);
 
                             // Support both text and interactive (button/list) messages
-                            String bodyText = null;
+                            String bodyText;
                             String type = msg.path("type").asText(null);
                             if ("interactive".equals(type)) {
                                 JsonNode interactive = msg.path("interactive");
@@ -105,8 +106,13 @@ public class WhatsAppWebhookController {
                                 continue;
                             }
 
-                            // Ajuste: Passe o nome como argumento (ou persista como precisar)
-                            registerMessageReceived.execute(new RegisterMessageReceivedCommand(messageId, from, bodyText, contactName));
+                            MessageReceived messageReceived = new MessageReceived();
+                            messageReceived.setWhatsappId(from);
+                            messageReceived.setMessage(bodyText);
+                            messageReceived.setReplaceToId(replyToMessageId);
+                            messageReceived.setContactName(contactName);
+                            messageReceived.setId(messageId);
+                            messageReceivedService.receiveMessage(messageReceived);
 
                             log.info("Persisted WhatsApp message id={} from={} contactName={} type={} length={}", messageId, mask(from), contactName, type == null ? "text" : type, bodyText.length());
                         }

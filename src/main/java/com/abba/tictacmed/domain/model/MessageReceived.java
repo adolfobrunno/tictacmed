@@ -13,7 +13,9 @@ public class MessageReceived {
     @Id
     private String id;
     private String whatsappId;
+    private String contactName;
     private String message;
+    private String replaceToId;
     private MessageReceivedStatus status = MessageReceivedStatus.PENDING;
     private OffsetDateTime receivedAt = OffsetDateTime.now();
     private OffsetDateTime processedAt;

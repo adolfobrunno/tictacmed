@@ -1,6 +1,5 @@
 package com.abba.tictacmed.infrastructure.config;
 
-import com.abba.tictacmed.infrastructure.messaging.whatsapp.WhatsAppProperties;
 import com.whatsapp.api.WhatsappApiFactory;
 import com.whatsapp.api.impl.WhatsappBusinessCloudApi;
 import lombok.RequiredArgsConstructor;

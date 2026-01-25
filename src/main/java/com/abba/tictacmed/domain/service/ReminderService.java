@@ -14,4 +14,6 @@ public interface ReminderService {
     Optional<OffsetDateTime> getNextDispatch(Reminder reminder);
     List<Reminder> getTodayPendingReminders();
 
+    void cancelReminder(Reminder reminder);
+
 }
