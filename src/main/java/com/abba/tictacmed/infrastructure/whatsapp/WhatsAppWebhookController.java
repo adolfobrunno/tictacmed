@@ -109,7 +109,7 @@ public class WhatsAppWebhookController {
                             MessageReceived messageReceived = new MessageReceived();
                             messageReceived.setWhatsappId(from);
                             messageReceived.setMessage(bodyText);
-                            messageReceived.setReplaceToId(replyToMessageId);
+                            messageReceived.setRepliedTo(replyToMessageId);
                             messageReceived.setContactName(contactName);
                             messageReceived.setId(messageId);
                             messageReceivedService.receiveMessage(messageReceived);

@@ -35,4 +35,8 @@ public class User {
         this.proUntil = OffsetDateTime.now().plusMonths(1);
     }
 
+    public boolean isPremium() {
+        return plan == Plan.PREMIUM && proUntil != null && proUntil.isAfter(OffsetDateTime.now());
+    }
+
 }

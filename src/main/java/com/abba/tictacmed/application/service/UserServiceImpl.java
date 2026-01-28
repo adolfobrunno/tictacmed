@@ -6,8 +6,6 @@ import com.abba.tictacmed.domain.repository.UserRepository;
 import com.abba.tictacmed.domain.service.UserService;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
-
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -25,19 +23,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isPro(User user) {
-        if (user == null || user.getPlan() != Plan.PREMIUM) {
-            return false;
-        }
-        OffsetDateTime proUntil = user.getProUntil();
-        return proUntil == null || proUntil.isAfter(OffsetDateTime.now());
-    }
-
-    @Override
     public void upgradePro(String whatsappId) {
         User user = userRepository.findByWhatsappId(whatsappId).orElseGet(() -> createNewUser(whatsappId, null));
         user.enablePremium();
         userRepository.save(user);
+    }
+
+    @Override
+    public User findByWhatsappId(String whatsappId) {
+        return userRepository.findByWhatsappId(whatsappId).orElse(null);
     }
 
     private User updateNameIfProvided(User user, String name) {

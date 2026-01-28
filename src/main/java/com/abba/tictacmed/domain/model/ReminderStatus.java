@@ -1,5 +1,5 @@
 package com.abba.tictacmed.domain.model;
 
 public enum ReminderStatus {
-    ACTIVE, CANCELLED
+    ACTIVE, CANCELLED, COMPLETED
 }

@@ -12,8 +12,12 @@ public interface ReminderService {
 
     Reminder scheduleMedication(User usuario, Medication med, String rrule);
     Optional<OffsetDateTime> getNextDispatch(Reminder reminder);
-    List<Reminder> getTodayPendingReminders();
 
+    List<Reminder> getNextsRemindersToNotify();
+
+    List<Reminder> getByUser(User user);
     void cancelReminder(Reminder reminder);
+
+    void updateReminderNextDispatch(Reminder reminder);
 
 }

@@ -2,6 +2,7 @@ package com.abba.tictacmed.domain.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.OffsetDateTime;
@@ -15,15 +16,17 @@ public class MessageReceived {
     private String whatsappId;
     private String contactName;
     private String message;
-    private String replaceToId;
+    private String repliedTo;
     private MessageReceivedStatus status = MessageReceivedStatus.PENDING;
     private OffsetDateTime receivedAt = OffsetDateTime.now();
     private OffsetDateTime processedAt;
 
-    public MessageReceived markAsProcessed() {
+    @DBRef
+    ReminderEvent reminderEvent;
+
+    public void markAsProcessed() {
         this.status = MessageReceivedStatus.PROCESSED;
         this.processedAt = OffsetDateTime.now();
-        return this;
     }
 
 }
