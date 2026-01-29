@@ -1,49 +1,44 @@
-# TicTacMed
+# Tá na hora!
 
-A simple medication reminder API built with Spring Boot 3. It lets you:
+Tá na hora! é um serviço de lembretes de medicamentos via WhatsApp. Ele permite:
 
-- Register patients
-- Create medication schedules for patients
-- Query the next upcoming administrations for a patient
-- Explore the API using Swagger UI
-
-This repository demonstrates a clean architecture split across domain, application (use cases), and infrastructure
-layers. It uses MySQL (via Flyway for migrations) and RabbitMQ (mocked in tests and wired via configuration for real
-usage).
+- Cadastrar lembretes com RRULE
+- Enviar lembretes e cobrar confirmação (Tomei/Esqueci)
+- Consultar o próximo horário agendado
+- Integrar com o WhatsApp Cloud API
 
 ## Tech stack
 
-- Java 21
-- Spring Boot 3 (Web, Data JPA, AMQP)
-- MySQL + Flyway (schema migrations)
-- Testcontainers (integration tests)
-- Swagger/OpenAPI via springdoc-openapi
+- Java 24
+- Spring Boot 3 (Web, Data MongoDB, AMQP)
+- MongoDB
+- OpenAI (classificação de mensagens)
+- lib-recur (RRULE)
 
-## Getting started
+## Começando
 
-### Prerequisites
+### Pré-requisitos
 
-- JDK 21
-- Docker (for local MySQL and RabbitMQ using Docker Compose)
-- Gradle (Wrapper included)
+- JDK 24
+- Docker (para MongoDB via Docker Compose)
+- Gradle (Wrapper incluído)
 
-### Start infrastructure with Docker Compose
-
-A minimal setup is provided to run MySQL and RabbitMQ locally:
+### Subir MongoDB com Docker Compose
 
 ```bash
-# from repository root
 docker compose up -d
 ```
 
-By default, the application expects:
+### Configuração
 
-- MySQL at jdbc:mysql://localhost:3306/tictacmed (user: root, password: secret)
-- RabbitMQ at default ports (credentials via environment variables if needed)
+As variáveis principais estão em `src/main/resources/application.yml`. Alguns exemplos:
 
-You can change these in src/main/resources/application.yml.
+- `SPRING_DATA_MONGODB_URI` e `SPRING_DATA_MONGODB_DATABASE`
+- `OPENAI_API_KEY` e `OPENAI_MODEL`
+- `TANAHORA_WHATSAPP_ENABLED`, `TANAHORA_WHATSAPP_ACCESS_TOKEN`, `TANAHORA_WHATSAPP_VERIFY_TOKEN`
+- `TANAHORA_SCHEDULER_ENABLED`
 
-### Run the application
+### Executar a aplicação
 
 ```bash
 # Windows PowerShell
@@ -53,81 +48,18 @@ You can change these in src/main/resources/application.yml.
 ./gradlew bootRun
 ```
 
-Once running, the API will be available at http://localhost:8080.
+O servidor sobe em http://localhost:8080.
 
-### Explore the API (Swagger UI)
+### Webhook do WhatsApp
 
-Open http://localhost:8080/swagger-ui.html to view and try the endpoints.
+O endpoint de webhook está em `POST /webhooks/whatsapp`.
 
-## API overview
+## Estrutura do projeto
 
-Base path: /api
+- `domain`: modelos e regras de negócio
+- `application`: casos de uso e serviços
+- `infrastructure`: integração (webhook, scheduler, configs)
 
-- POST /api/patients
-    - Registers a patient.
-    - Request: { "name": "John Doe", "contact": "+123456789" }
-    - Response: 201 Created with patient data (id, name, contact)
+## Licença
 
-- POST /api/schedules
-    - Creates a medication schedule for a patient.
-    - Request:
-      {
-      "patientId": "<UUID>",
-      "medicineName": "Ibuprofen",
-      "startAt": "2025-01-01T10:00:00Z",
-      "endAt": "2025-01-01T14:00:00Z",
-      "frequency": "10m"
-      }
-    - Notes:
-        - frequency accepts a friendly format like: 30s, 10m, 2h, 1d (combinators like 1h30m are also supported by
-          concatenation: e.g., "1h30m"). If a pure number is provided, it is treated as seconds for backward
-          compatibility.
-
-- GET /api/schedules/next?patientId=<UUID>&from=<ISO>&to=<ISO>
-    - Returns the next due administration for each schedule of the given patient within the [from..to] window.
-    - Default: from=now, to=from+1 day.
-
-## Persistence & schema
-
-- Flyway migration scripts are in src/main/resources/db/migration (starting with V1__init.sql)
-- MySQL driver: com.mysql.cj.jdbc.Driver
-- JPA settings use UTC for timestamps.
-
-## Configuration
-
-Key properties (see application.yml):
-
-- spring.datasource.url: jdbc:mysql://localhost:3306/tictacmed
-- spring.datasource.username: root
-- spring.datasource.password: secret
-- tictacmed.scheduler.enabled: true/false (controls periodic reminder job)
-- tictacmed.whatsapp.enabled: true/false (example of a notification channel)
-
-## Tests
-
-This project uses JUnit and Spring Boot test support. Some tests use Testcontainers for MySQL and RabbitMQ.
-
-Run tests:
-
-```bash
-# Windows PowerShell
-./gradlew.bat test
-
-# Linux/macOS
-./gradlew test
-```
-
-## Project layout
-
-- domain: Core business models and repositories
-- application: Use cases (services) and commands/results
-- infrastructure: Web controllers, persistence adapters/entities, messaging, scheduling, configuration
-
-## Notes
-
-- The scheduling frequency is stored internally as seconds, but the API accepts a friendly duration string.
-- The scheduler job can send notifications via pluggable channels (e.g., WhatsApp) when enabled and configured.
-
-## License
-
-This project is provided as-is for demonstration purposes. Add your preferred license text here.
+Defina a licença conforme a necessidade do projeto.

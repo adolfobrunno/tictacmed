@@ -1,0 +1,91 @@
+package com.abba.tanahora.application.service;
+
+import com.abba.tanahora.application.exceptions.ReminderLimitException;
+import com.abba.tanahora.domain.exceptions.InvalidRruleException;
+import com.abba.tanahora.domain.model.Medication;
+import com.abba.tanahora.domain.model.Reminder;
+import com.abba.tanahora.domain.model.ReminderStatus;
+import com.abba.tanahora.domain.model.User;
+import com.abba.tanahora.domain.repository.ReminderRepository;
+import com.abba.tanahora.domain.service.NotificationService;
+import com.abba.tanahora.domain.service.ReminderService;
+import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static com.abba.tanahora.domain.utils.Constants.BRAZIL_ZONEID;
+
+@Service
+public class ReminderServiceImpl implements ReminderService {
+
+    private final ReminderRepository reminderRepository;
+    private final NotificationService notificationService;
+
+    public ReminderServiceImpl(ReminderRepository reminderRepository, NotificationService notificationService) {
+        this.reminderRepository = reminderRepository;
+        this.notificationService = notificationService;
+    }
+
+    @Override
+    public Reminder scheduleMedication(User user, Medication med, String rrule) {
+
+        if (rrule == null || rrule.isBlank()) {
+            throw new InvalidRruleException("rrule cannot be blank");
+        }
+
+        if (canCreateReminder(user)) {
+            Reminder reminder = new Reminder();
+            reminder.setMedication(med);
+            reminder.setRrule(rrule);
+            reminder.setStatus(ReminderStatus.ACTIVE);
+            reminder.setUser(user);
+            reminder.updateNextDispatch();
+            return reminderRepository.save(reminder);
+        } else {
+            throw new ReminderLimitException("No premium user already has a reminder");
+        }
+    }
+
+    @Override
+    public Optional<OffsetDateTime> getNextDispatch(Reminder reminder) {
+        return Optional.ofNullable(reminder.getNextDispatch());
+    }
+
+    @Override
+    public List<Reminder> getNextsRemindersToNotify() {
+        return reminderRepository.findPendingNextDispatch(OffsetDateTime.now(BRAZIL_ZONEID));
+    }
+
+    @Override
+    public List<Reminder> getByUser(User user) {
+        return reminderRepository.findByUserAndStatus(user, ReminderStatus.ACTIVE);
+    }
+
+    @Override
+    public void cancelReminder(Reminder reminder) {
+        reminder.cancelReminder();
+        reminderRepository.save(reminder);
+    }
+
+    @Override
+    public void updateReminderNextDispatch(Reminder reminder) {
+        reminder.updateNextDispatch();
+        reminderRepository.save(reminder);
+        if (reminder.getStatus() == ReminderStatus.ACTIVE) {
+            notificationService.sendNotification(reminder.getUser(), reminder.createNextDispatchMessage());
+        } else if (reminder.getStatus() == ReminderStatus.COMPLETED) {
+            notificationService.sendNotification(reminder.getUser(), reminder.createCompletedMessage());
+        }
+    }
+
+    private boolean canCreateReminder(User user) {
+        if (user.isPremium()) {
+            return true;
+        }
+
+        List<Reminder> currents = reminderRepository.findByUserAndStatus(user, ReminderStatus.ACTIVE);
+        return currents.isEmpty();
+    }
+}

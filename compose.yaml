@@ -2,7 +2,7 @@ services:
   mongodb:
     image: 'mongo:6.0'
     environment:
-      - 'MONGO_INITDB_DATABASE=tic-tac-med'
+      - 'MONGO_INITDB_DATABASE=ta-na-hora'
       - 'MONGO_INITDB_ROOT_PASSWORD=secret'
       - 'MONGO_INITDB_ROOT_USERNAME=root'
     ports:

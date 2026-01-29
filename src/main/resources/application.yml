@@ -2,7 +2,7 @@ spring:
   config:
     import: file:.env[.properties]
   application:
-    name: tictacmed
+    name: tanahora
 
   jackson:
     time-zone: America/Sao_Paulo
@@ -10,7 +10,7 @@ spring:
   data:
     mongodb:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017}
-      database: ${SPRING_DATA_MONGODB_DATABASE:tic-tac-med}
+      database: ${SPRING_DATA_MONGODB_DATABASE:ta-na-hora}
 
   ai:
     openai:
@@ -21,17 +21,16 @@ spring:
           max-tokens: ${OPENAI_MAX_TOKENS:1000}
 
 
-tictacmed:
+tanahora:
   whatsapp:
-    enabled: ${TICTACMED_WHATSAPP_ENABLED:false}
-    from-number: ${TICTACMED_WHATSAPP_FROM_NUMBER:"+0000000000"}
-    template: "Hello {patientName}, it's time to take your {medicineName} at {scheduledAt}."
-    verify-token: ${TICTACMED_WHATSAPP_VERIFY_TOKEN:fAkE_vErIfY_tOkEn}
-    access-token: ${TICTACMED_WHATSAPP_ACCESS_TOKEN:FAKE_ACCESS_TOKEN}
+    enabled: ${TANAHORA_WHATSAPP_ENABLED:false}
+    from-number: ${TANAHORA_WHATSAPP_FROM_NUMBER:"+0000000000"}
+    verify-token: ${TANAHORA_WHATSAPP_VERIFY_TOKEN:fAkE_vErIfY_tOkEn}
+    access-token: ${TANAHORA_WHATSAPP_ACCESS_TOKEN:FAKE_ACCESS_TOKEN}
   scheduler:
-    enabled: ${TICTACMED_SCHEDULER_ENABLED:true}
-    fixed-delay-ms: ${TICTACMED_SCHEDULER_FIXED_DELAY_MS:60000}
-    send-reminders-delay-ms: ${TICTACMED_SCHEDULER_SEND_REMINDERS_DELAY_MS:300000}
+    enabled: ${TANAHORA_SCHEDULER_ENABLED:true}
+    fixed-delay-ms: ${TANAHORA_SCHEDULER_FIXED_DELAY_MS:60000}
+    send-reminders-delay-ms: ${TANAHORA_SCHEDULER_SEND_REMINDERS_DELAY_MS:300000}
 
 logging:
   level:

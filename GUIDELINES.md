@@ -29,7 +29,7 @@ mechanisms.
 Recommended high-level package structure:
 
 ```
-com.abba.tictacmed
+com.abba.tanahora
   ├─ application          // Use cases (orchestrate domain, transactional boundaries)
   │   └─ <feature>
   │       ├─ command|query
