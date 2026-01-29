@@ -12,5 +12,7 @@ public class AiMessageProcessorDto {
     String medication;
     @JsonProperty(required = true)
     MessageReceivedType type;
+    @JsonProperty(required = true)
+    String dosage;
 
 }

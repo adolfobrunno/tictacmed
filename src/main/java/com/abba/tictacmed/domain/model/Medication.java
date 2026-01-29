@@ -14,6 +14,7 @@ public class Medication {
     @Id
     private UUID id = UUID.randomUUID();
     private String name;
+    private String dosage;
 
     @DBRef private User user;
 

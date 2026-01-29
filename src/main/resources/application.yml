@@ -22,13 +22,6 @@ spring:
 
 
 tictacmed:
-  templates:
-    welcome-message-received:
-      free: Olá, gostaria de experimentar.
-      premium: Olá, gostaria de experimentar com a versão premium.
-    welcome-message-sent:
-      free: Olá {contactName}, bem-vindo ao TicTacMed! Estou aqui para ajudar você a gerenciar seus medicamentos. Por favor, me informe qual medicamento e a frequência você deseja registrar.
-      premium: Olá {contactName}, bem-vindo ao TicTacMed!
   whatsapp:
     enabled: ${TICTACMED_WHATSAPP_ENABLED:false}
     from-number: ${TICTACMED_WHATSAPP_FROM_NUMBER:"+0000000000"}

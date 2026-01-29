@@ -85,12 +85,12 @@ public class Reminder {
         return String.format("""
                 Olá! 👋
                 
-                Está na hora de tomar seu medicamento: %s.
+                Está na hora de tomar seu medicamento: %s. Dose: %s
                 
                 Assim você mantém seu tratamento em dia!
                 
                 Responda como "Tomei" ✅ ou "Esqueci" ❌ para registrar.
-                """, medication.getName());
+                """, medication.getName(), medication.getDosage());
     }
 
     public String createTakenConfirmationMessage() {
@@ -134,6 +134,17 @@ public class Reminder {
     public String createCompletedMessage() {
         return String.format("""
                 🎉 Parabéns! Você concluiu o tratamento do seu medicamento: %s.
+                """, medication.getName());
+    }
+
+    public String createCancelNotification() {
+        return String.format("""
+                Tudo bem 👍
+                Cancelamos o seu lembrete para o medicamento: %s.
+                
+                Se precisar, basta registrar novamente.
+                
+                Até breve 👋
                 """, medication.getName());
     }
 }
