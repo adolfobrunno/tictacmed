@@ -63,9 +63,6 @@ public class MedicationRegistrationHandler implements MessageHandler {
             Reminder reminder = reminderService.scheduleMedication(user, medication, dto.getRrule());
             notificationService.sendNotification(user, reminder.createNewReminderMessage());
 
-            state.setCurrentFlow(null);
-            state.setStep(null);
-            state.getContext().clear();
         } catch (ReminderLimitException e) {
             notificationService.sendNotification(user,
                     """
@@ -76,5 +73,8 @@ public class MedicationRegistrationHandler implements MessageHandler {
                             Se preferir, você também pode apagar um lembrete existente e cadastrar um novo no lugar.
                             """);
         }
+        state.setCurrentFlow(null);
+        state.setStep(null);
+        state.getContext().clear();
     }
 }
