@@ -4,6 +4,9 @@ spring:
   application:
     name: tanahora
 
+server:
+  port: ${PORT:8080}
+
   jackson:
     time-zone: America/Sao_Paulo
 
