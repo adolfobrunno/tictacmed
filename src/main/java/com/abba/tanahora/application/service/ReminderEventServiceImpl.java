@@ -61,7 +61,7 @@ public class ReminderEventServiceImpl implements ReminderEventService {
         log.debug("Updating reminder event status for replyToMessageId={} responseText={} userId={}", replyToMessageId, responseText, userId);
 
         if(replyToMessageId == null) {
-            event = reminderEventRepository.findLastByReminderUserAndStatus(user, ReminderEventStatus.PENDING);
+            event = reminderEventRepository.findLastByReminderUserWhatsappIdAndStatus(user.getWhatsappId(), ReminderEventStatus.PENDING);
         } else {
             event = reminderEventRepository.findFirstByWhatsappMessageId(replyToMessageId);
         }

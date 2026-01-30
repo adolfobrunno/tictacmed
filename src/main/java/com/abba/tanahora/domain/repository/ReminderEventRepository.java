@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface ReminderEventRepository extends MongoRepository<ReminderEvent, UUID> {
 
     Optional<ReminderEvent> findFirstByWhatsappMessageId(String whatsappMessageId);
-    Optional<ReminderEvent> findLastByReminderUserAndStatus(User user, ReminderEventStatus status);
+    Optional<ReminderEvent> findLastByReminderUserWhatsappIdAndStatus(String whatsappId, ReminderEventStatus status);
 
     Optional<ReminderEvent> findFirstByReminderAndStatusOrderBySentAtDesc(Reminder reminder, ReminderEventStatus status);
 
