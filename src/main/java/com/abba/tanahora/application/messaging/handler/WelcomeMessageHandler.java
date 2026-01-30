@@ -46,18 +46,22 @@ public class WelcomeMessageHandler implements MessageHandler {
                 
                 Mensagem = %s
                 
-                Seja cordial e gentil na sua resposta.
+                Seja cordial, gentil e breve na sua resposta.
                 Ensine ele a criar um novo lembrete de medicamento.
                 Para criar um novo lembrete ele deve informar o nome do medicamento, a quantidade a ser tomada, a frequência e a data de início.
                 
                 Informe também sobre os dois planos disponíveis:
                 - Plano gratuito: 1 lembrete ativo por tempo indeterminado
-                - Plano premium: lembretes ilimitados por R$ 9,99 ao mês
+                - Plano premium: lembretes ilimitados por R$ 9,99 ao mês (em breve)
                 """;
 
         WelcomeMessageDTO welcomeMessageDTO = openAiApiService.sendPrompt(String.format(prompt, message.getBody()), WelcomeMessageDTO.class);
 
         notificationService.sendNotification(user, welcomeMessageDTO.message);
+
+        state.setCurrentFlow(null);
+        state.setStep(null);
+        state.getContext().clear();
 
     }
 

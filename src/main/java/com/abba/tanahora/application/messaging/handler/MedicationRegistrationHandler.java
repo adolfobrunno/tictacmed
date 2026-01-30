@@ -62,6 +62,10 @@ public class MedicationRegistrationHandler implements MessageHandler {
         try {
             Reminder reminder = reminderService.scheduleMedication(user, medication, dto.getRrule());
             notificationService.sendNotification(user, reminder.createNewReminderMessage());
+
+            state.setCurrentFlow(null);
+            state.setStep(null);
+            state.getContext().clear();
         } catch (ReminderLimitException e) {
             notificationService.sendNotification(user,
                     """
