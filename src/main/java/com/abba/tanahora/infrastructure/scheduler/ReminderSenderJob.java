@@ -39,10 +39,7 @@ public class ReminderSenderJob {
             if (reminder.isActive()) {
                 Optional<ReminderEvent> pendingEvent = reminderEventService.findPendingByReminder(reminder);
                 if (pendingEvent.isPresent()) {
-                    String messageId = notificationService.sendNotification(reminder.getUser(), reminder.createMissedReminderMessage());
-                    if (messageId != null && !messageId.isBlank()) {
-                        reminderEventService.updateDispatch(pendingEvent.get(), messageId);
-                    }
+                    notificationService.sendNotification(reminder.getUser(), reminder.createMissedReminderMessage());
                 } else {
                     String messageId = notificationService.sendNotification(reminder.getUser(), reminder.createSendReminderMessage());
                     reminderEventService.registerDispatch(reminder, messageId);
