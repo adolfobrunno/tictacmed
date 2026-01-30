@@ -61,7 +61,7 @@ public class ReminderEventServiceImpl implements ReminderEventService {
             event = reminderEventRepository.findFirstByWhatsappMessageId(replyToMessageId);
         }
 
-        ReminderEventStatus reminderEventStatus = ReminderEventStatus.valueOf(responseText);
+        ReminderEventStatus reminderEventStatus = parseStatus(responseText).orElse(ReminderEventStatus.PENDING);
 
         event.ifPresent(e -> {
             e.setStatus(reminderEventStatus);
@@ -71,6 +71,21 @@ public class ReminderEventServiceImpl implements ReminderEventService {
 
 
         return event;
+    }
+
+    private Optional<ReminderEventStatus> parseStatus(String responseText) {
+        if (responseText == null || responseText.isBlank()) {
+            return Optional.empty();
+        }
+
+        ReminderEventStatusDTO reminderEventStatusDTO = openAiApiService.sendPrompt(String.format(
+                """
+                        Analise a seguinte mensagem e retorne um status adequado de acordo com o modelo.
+                        
+                        mensagem = %s
+                        """, responseText), ReminderEventStatusDTO.class);
+
+        return Optional.ofNullable(reminderEventStatusDTO.status);
     }
 
     static class ReminderEventStatusDTO {
