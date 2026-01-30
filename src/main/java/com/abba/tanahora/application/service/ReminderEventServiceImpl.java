@@ -47,15 +47,20 @@ public class ReminderEventServiceImpl implements ReminderEventService {
 
     @Override
     public Optional<ReminderEvent> updateStatusFromResponse(String replyToMessageId, String responseText) {
-        if (replyToMessageId == null || replyToMessageId.isBlank()) {
-            return Optional.empty();
-        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<ReminderEvent> updateLastPending(String whatsappId, String responseText) {
+
         Optional<ReminderEventStatus> status = parseStatus(responseText);
-        return status.flatMap(reminderEventStatus -> reminderEventRepository.findFirstByWhatsappMessageId(replyToMessageId).filter(event -> event.getStatus() == ReminderEventStatus.PENDING).map(event -> {
-            event.setStatus(reminderEventStatus);
-            event.setResponseReceivedAt(OffsetDateTime.now());
-            return reminderEventRepository.save(event);
-        }));
+
+        return reminderEventRepository.findFirstByReminderUserWhatsappIdAndStatusOrderBySentAtDesc(whatsappId, ReminderEventStatus.PENDING)
+                .map(event -> {
+                    event.setStatus(status.get());
+                    event.setResponseReceivedAt(OffsetDateTime.now());
+                    return reminderEventRepository.save(event);
+                });
     }
 
     private Optional<ReminderEventStatus> parseStatus(String responseText) {

@@ -13,4 +13,6 @@ public interface ReminderEventRepository extends MongoRepository<ReminderEvent, 
     Optional<ReminderEvent> findFirstByWhatsappMessageId(String whatsappMessageId);
 
     Optional<ReminderEvent> findFirstByReminderAndStatusOrderBySentAtDesc(Reminder reminder, ReminderEventStatus status);
+
+    Optional<ReminderEvent> findFirstByReminderUserWhatsappIdAndStatusOrderBySentAtDesc(String whatsappId, ReminderEventStatus status);
 }

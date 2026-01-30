@@ -14,4 +14,6 @@ public interface ReminderEventService {
     ReminderEvent updateDispatch(ReminderEvent event, String whatsappMessageId);
 
     Optional<ReminderEvent> updateStatusFromResponse(String replyToMessageId, String responseText);
+
+    Optional<ReminderEvent> updateLastPending(String whatsappId, String responseText);
 }
