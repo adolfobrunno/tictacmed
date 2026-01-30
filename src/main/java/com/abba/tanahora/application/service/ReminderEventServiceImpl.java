@@ -37,6 +37,7 @@ public class ReminderEventServiceImpl implements ReminderEventService {
         ReminderEvent event = new ReminderEvent();
         event.setReminder(reminder);
         event.setWhatsappMessageId(whatsappMessageId);
+        event.setUserWhatsappId(reminder.getUser().getWhatsappId());
         return reminderEventRepository.save(event);
     }
 
@@ -61,7 +62,7 @@ public class ReminderEventServiceImpl implements ReminderEventService {
         log.debug("Updating reminder event status for replyToMessageId={} responseText={} userId={}", replyToMessageId, responseText, userId);
 
         if(replyToMessageId == null) {
-            event = reminderEventRepository.findLastByReminderUserWhatsappIdAndStatus(user.getWhatsappId(), ReminderEventStatus.PENDING);
+            event = reminderEventRepository.findLastByUserWhatsappIdAndStatus(user.getWhatsappId(), ReminderEventStatus.PENDING);
         } else {
             event = reminderEventRepository.findFirstByWhatsappMessageId(replyToMessageId);
         }

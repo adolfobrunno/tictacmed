@@ -17,7 +17,8 @@ public class ReminderEvent {
     private UUID id = UUID.randomUUID();
     private OffsetDateTime sentAt = OffsetDateTime.now();
     private OffsetDateTime responseReceivedAt;
-    private String userId;
+    @Indexed(name = "reminder_event_message_idx")
+    private String userWhatsappId;
 
     @Indexed(name = "reminder_event_message_idx")
     private String whatsappMessageId;
