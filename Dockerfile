@@ -5,6 +5,7 @@ COPY gradlew gradlew.bat settings.gradle build.gradle ./
 COPY gradle gradle
 COPY src src
 
+RUN chmod +x gradlew
 RUN ./gradlew --no-daemon bootJar
 
 FROM eclipse-temurin:24-jre
