@@ -1,11 +1,11 @@
+server:
+  port: ${PORT:8080}
+
 spring:
   config:
     import: optional:file:.env[.properties]
   application:
     name: tanahora
-
-server:
-  port: ${PORT:8080}
 
   jackson:
     time-zone: America/Sao_Paulo
