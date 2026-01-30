@@ -44,7 +44,7 @@ public class ReplyReminderEventHandler implements MessageHandler {
     public void handle(AIMessage message, FlowState state) {
         log.info("Updating reminder event status for message id={} whatsappId={}", message.getId(), message.getWhatsappId());
         AiMessageProcessorDto dto = messageClassifier.classify(message, state);
-        Optional<ReminderEvent> reminderEvent = reminderEventService.updateLastPending(state.getUserId(), dto.getType().name());
+        Optional<ReminderEvent> reminderEvent = reminderEventService.updateStatusFromResponse(message.getReplyToId(), dto.getType().name(), state.getUserId());
         reminderEvent.ifPresent(event -> {
             Reminder reminder = event.getReminder();
             String messageToResponse = dto.getType() == MessageReceivedType.REMINDER_RESPONSE_TAKEN ?

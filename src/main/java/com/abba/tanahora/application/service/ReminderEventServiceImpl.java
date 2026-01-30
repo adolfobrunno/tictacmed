@@ -3,9 +3,11 @@ package com.abba.tanahora.application.service;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.ReminderEvent;
 import com.abba.tanahora.domain.model.ReminderEventStatus;
+import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.repository.ReminderEventRepository;
 import com.abba.tanahora.domain.service.ReminderEventService;
 import com.abba.tanahora.domain.service.ReminderService;
+import com.abba.tanahora.domain.service.UserService;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +20,13 @@ public class ReminderEventServiceImpl implements ReminderEventService {
     private final ReminderEventRepository reminderEventRepository;
     private final OpenAiApiService openAiApiService;
     private final ReminderService reminderService;
+    private final UserService userService;
 
-    public ReminderEventServiceImpl(ReminderEventRepository reminderEventRepository, OpenAiApiService openAiApiService, ReminderService reminderService) {
+    public ReminderEventServiceImpl(ReminderEventRepository reminderEventRepository, OpenAiApiService openAiApiService, ReminderService reminderService, UserService userService) {
         this.reminderEventRepository = reminderEventRepository;
         this.openAiApiService = openAiApiService;
         this.reminderService = reminderService;
+        this.userService = userService;
     }
 
     @Override
@@ -46,36 +50,27 @@ public class ReminderEventServiceImpl implements ReminderEventService {
     }
 
     @Override
-    public Optional<ReminderEvent> updateStatusFromResponse(String replyToMessageId, String responseText) {
-        return Optional.empty();
-    }
+    public Optional<ReminderEvent> updateStatusFromResponse(String replyToMessageId, String responseText, String userId) {
 
-    @Override
-    public Optional<ReminderEvent> updateLastPending(String userId, String responseText) {
+        User user = userService.findByWhatsappId(userId);
+        Optional<ReminderEvent> event;
 
-        Optional<ReminderEventStatus> status = parseStatus(responseText);
-
-        return reminderEventRepository.findFirstByReminderUserIdAndStatusOrderBySentAtDesc(userId, ReminderEventStatus.PENDING)
-                .map(event -> {
-                    event.setStatus(status.get());
-                    event.setResponseReceivedAt(OffsetDateTime.now());
-                    return reminderEventRepository.save(event);
-                });
-    }
-
-    private Optional<ReminderEventStatus> parseStatus(String responseText) {
-        if (responseText == null || responseText.isBlank()) {
-            return Optional.empty();
+        if(replyToMessageId == null) {
+            event = reminderEventRepository.findLastByReminderUserAndStatus(user, ReminderEventStatus.PENDING);
+        } else {
+            event = reminderEventRepository.findFirstByWhatsappMessageId(replyToMessageId);
         }
 
-        ReminderEventStatusDTO reminderEventStatusDTO = openAiApiService.sendPrompt(String.format(
-                """
-                        Analise a seguinte mensagem e retorne um status adequado de acordo com o modelo.
-                        
-                        mensagem = %s
-                        """, responseText), ReminderEventStatusDTO.class);
+        ReminderEventStatus reminderEventStatus = ReminderEventStatus.valueOf(responseText);
 
-        return Optional.ofNullable(reminderEventStatusDTO.status);
+        event.ifPresent(e -> {
+            e.setStatus(reminderEventStatus);
+            e.setResponseReceivedAt(OffsetDateTime.now());
+            reminderEventRepository.save(e);
+        });
+
+
+        return event;
     }
 
     static class ReminderEventStatusDTO {
