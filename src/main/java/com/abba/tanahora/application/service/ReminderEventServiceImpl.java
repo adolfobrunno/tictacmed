@@ -9,12 +9,15 @@ import com.abba.tanahora.domain.service.ReminderEventService;
 import com.abba.tanahora.domain.service.ReminderService;
 import com.abba.tanahora.domain.service.UserService;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ReminderEventServiceImpl implements ReminderEventService {
 
     private final ReminderEventRepository reminderEventRepository;
@@ -55,6 +58,8 @@ public class ReminderEventServiceImpl implements ReminderEventService {
         User user = userService.findByWhatsappId(userId);
         Optional<ReminderEvent> event;
 
+        log.debug("Updating reminder event status for replyToMessageId={} responseText={} userId={}", replyToMessageId, responseText, userId);
+
         if(replyToMessageId == null) {
             event = reminderEventRepository.findLastByReminderUserAndStatus(user, ReminderEventStatus.PENDING);
         } else {
@@ -62,6 +67,8 @@ public class ReminderEventServiceImpl implements ReminderEventService {
         }
 
         ReminderEventStatus reminderEventStatus = parseStatus(responseText).orElse(ReminderEventStatus.PENDING);
+
+        log.debug("Updating reminder event {} status to {}", event, reminderEventStatus);
 
         event.ifPresent(e -> {
             e.setStatus(reminderEventStatus);
