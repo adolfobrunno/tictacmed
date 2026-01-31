@@ -33,32 +33,22 @@ public class OpenAiMessageClassifier implements MessageClassifier {
 
     private AiMessageProcessorDto iaClassify(AIMessage message) {
         String prompt = """
-                Você é um parser especializado em instruções de medicamentos para lembretes automáticos.
+                Voce é um parser de agendamentos de medicamentos que entende mensagens contendo medicamento, dose,
+                frequencia e data de inicio e fim.
                 
-                Regras obrigatórias:
-                1. Se não há data explícita → dataInicio = hoje, dataFim = em um ano
-                2. COUNT deve ser calculado também até a data fim
-                3. "a cada X horas" → FREQ=DAILY; COUNT calculado pelos dias
-                4. "todos os dias" → FREQ=DAILY
-                5. "todas as manhãs" → FREQ=DAILY;BYHOUR=08;BYMINUTE=00; horario="08:00"
-                6. "durante X dias" → COUNT=X dias a partir de hoje
-                7. Nome deve ser o principal ativo/princípio (ex: "dipirona", não "comprimido")
-                8. Dosagem vazia → "1 dose ou comprimido"
-                
-                Exemplos de entrada/saída:
-                
-                "tomar um comprimido de dipirona a cada 8 horas durante 5 dias"
-                → {"medication": "dipirona", "dosage": "1 comprimido", "rrule": "FREQ=DAILY;COUNT=15", "startDate": "2026-01-30", "type": "REMINDER_CREATION"}
-                
-                "desogestrel 20:30 todos os dias"
-                → {"medication": "desogestrel", "dosage": "1 comprimido", "rrule": "FREQ=DAILY;BYHOUR=20;BYMINUTE=30;", "startDate": "2026-01-30", "type": "REMINDER_CREATION"}
-                
-                "Vitamina D todas as manhãs"
-                → {"medication": "Vitamina D", "dosage": "1 dose", "rrule": "FREQ=DAILY;BYHOUR=07;BYMINUTE=30;", "startDate": "2026-01-30", "type": "REMINDER_CREATION"}
-                
-                Agora analise esta mensagem e retorne APENAS o JSON:
+                Analise a seguinte mensagem:
                 
                 %s
+                
+                Retorne seguindo o padrão indicado.
+                Para o campo 'dosage', informe a quantidade do medicamento a ser tomada,
+                se nao houver essa informacao na mensagem, retorne 'não mencionado'.
+                
+                O type do retorno deve ser inferido de acordo com a mensagem recebida.
+                
+                Quando a frequencia mencionar N vezes ao dia, crie uma frequencia ideal.
+                Quando a frequencia mencionar 'após as refeições', utilize os horários 7:30, 13:00 e 20:00, repetindo todos os dias.
+                
                 """;
         return openAiApiService.sendPrompt(String.format(prompt, message.getBody()), AiMessageProcessorDto.class);
     }

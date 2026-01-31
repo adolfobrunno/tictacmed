@@ -6,6 +6,7 @@ import com.abba.tanahora.application.exceptions.ReminderLimitException;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.classifier.MessageClassifier;
 import com.abba.tanahora.application.messaging.flow.FlowState;
+import com.abba.tanahora.domain.exceptions.InvalidRruleException;
 import com.abba.tanahora.domain.model.Medication;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.User;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Order(200)
-public class MedicationRegistrationHandler implements MessageHandler {
+public class MedicationRegistrationHandler implements HandleAndFlushMessageHandler {
 
     private final MessageClassifier messageClassifier;
     private final MedicationService medicationService;
@@ -45,7 +46,7 @@ public class MedicationRegistrationHandler implements MessageHandler {
     }
 
     @Override
-    public void handle(AIMessage message, FlowState state) {
+    public void handleAndFlush(AIMessage message, FlowState state) {
         AiMessageProcessorDto dto = messageClassifier.classify(message, state);
         if (dto == null || dto.getType() != MessageReceivedType.REMINDER_CREATION) {
             return;
@@ -72,9 +73,19 @@ public class MedicationRegistrationHandler implements MessageHandler {
                             
                             Se preferir, você também pode apagar um lembrete existente e cadastrar um novo no lugar.
                             """);
+        } catch (InvalidRruleException e) {
+            notificationService.sendNotification(user,
+                    """
+                            Ops! 🙁 Não consegui entender a recorrência informada.
+                            Por favor, verifique a sintaxe e tente novamente.
+                            
+                            Exemplos:
+                             - A cada 8 horas durante 7 dias
+                             - Todo dia às 20:00
+                             - Toda manhã até dia 10 de janeiro
+                            """);
         }
-        state.setCurrentFlow(null);
-        state.setStep(null);
-        state.getContext().clear();
+        this.flush(state);
+
     }
 }

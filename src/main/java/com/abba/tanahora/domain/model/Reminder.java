@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -104,7 +105,7 @@ public class Reminder {
     public String createNextDispatchMessage() {
         return String.format("⏰ Próximo lembrete para o medicamento %s agendado para %s",
                 medication.getName(),
-                nextDispatch.atZoneSameInstant(BRAZIL_ZONEID).toLocalTime().toString());
+                nextDispatch.atZoneSameInstant(BRAZIL_ZONEID).toLocalTime().truncatedTo(ChronoUnit.MINUTES).toString());
     }
 
     public String createMissedReminderMessage() {
