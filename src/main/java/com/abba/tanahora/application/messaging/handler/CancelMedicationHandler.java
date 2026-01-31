@@ -19,7 +19,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @Order(500)
-public class CancelMedicationHandler implements MessageHandler {
+public class CancelMedicationHandler implements HandleAndFlushMessageHandler {
 
     private final MessageClassifier messageClassifier;
     private final UserService userService;
@@ -41,7 +41,7 @@ public class CancelMedicationHandler implements MessageHandler {
     }
 
     @Override
-    public void handle(AIMessage message, FlowState state) {
+    public void handleAndFlush(AIMessage message, FlowState state) {
 
         AiMessageProcessorDto dto = messageClassifier.classify(message, state);
 
@@ -67,9 +67,5 @@ public class CancelMedicationHandler implements MessageHandler {
                             """, dto.getMedication()
             ));
         }
-
-        state.setCurrentFlow(null);
-        state.setStep(null);
-        state.getContext().clear();
     }
 }

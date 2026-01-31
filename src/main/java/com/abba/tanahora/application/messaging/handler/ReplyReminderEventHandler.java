@@ -19,7 +19,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @Order(400)
-public class ReplyReminderEventHandler implements MessageHandler {
+public class ReplyReminderEventHandler implements HandleAndFlushMessageHandler {
 
     private final MessageClassifier messageClassifier;
     private final ReminderEventService reminderEventService;
@@ -41,7 +41,7 @@ public class ReplyReminderEventHandler implements MessageHandler {
     }
 
     @Override
-    public void handle(AIMessage message, FlowState state) {
+    public void handleAndFlush(AIMessage message, FlowState state) {
         log.info("Updating reminder event status for message id={} whatsappId={}", message.getId(), message.getWhatsappId());
         AiMessageProcessorDto dto = messageClassifier.classify(message, state);
         Optional<ReminderEvent> reminderEvent = reminderEventService.updateStatusFromResponse(message.getReplyToId(), dto.getType().name(), state.getUserId());
@@ -51,9 +51,6 @@ public class ReplyReminderEventHandler implements MessageHandler {
                     reminder.createTakenConfirmationMessage() : reminder.createSkippedConfirmationMessage();
             notificationService.sendNotification(reminder.getUser(), messageToResponse);
             reminderService.updateReminderNextDispatch(reminder);
-            state.setCurrentFlow(null);
-            state.setStep(null);
-            state.getContext().clear();
         });
     }
 }

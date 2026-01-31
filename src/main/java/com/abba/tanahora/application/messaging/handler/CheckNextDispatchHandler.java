@@ -19,7 +19,7 @@ import java.util.Comparator;
 @Component
 @Slf4j
 @Order(300)
-public class CheckNextDispatchHandler implements MessageHandler {
+public class CheckNextDispatchHandler implements HandleAndFlushMessageHandler {
 
     private final MessageClassifier messageClassifier;
     private final ReminderService reminderService;
@@ -41,7 +41,7 @@ public class CheckNextDispatchHandler implements MessageHandler {
     }
 
     @Override
-    public void handle(AIMessage message, FlowState state) {
+    public void handleAndFlush(AIMessage message, FlowState state) {
         log.info("Checking next dispatch for user={}", state.getUserId());
         User user = userService.findByWhatsappId(state.getUserId());
 

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Order(900)
-public class WelcomeMessageHandler implements MessageHandler {
+public class WelcomeMessageHandler implements HandleAndFlushMessageHandler {
 
     private final MessageClassifier messageClassifier;
     private final NotificationService notificationService;
@@ -36,7 +36,7 @@ public class WelcomeMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void handle(AIMessage message, FlowState state) {
+    public void handleAndFlush(AIMessage message, FlowState state) {
 
         User user = userService.register(message.getWhatsappId(), message.getContactName());
 
@@ -58,11 +58,6 @@ public class WelcomeMessageHandler implements MessageHandler {
         WelcomeMessageDTO welcomeMessageDTO = openAiApiService.sendPrompt(String.format(prompt, message.getBody()), WelcomeMessageDTO.class);
 
         notificationService.sendNotification(user, welcomeMessageDTO.message);
-
-        state.setCurrentFlow(null);
-        state.setStep(null);
-        state.getContext().clear();
-
     }
 
     static class WelcomeMessageDTO {
