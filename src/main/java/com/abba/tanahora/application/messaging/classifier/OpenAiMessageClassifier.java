@@ -44,7 +44,16 @@ public class OpenAiMessageClassifier implements MessageClassifier {
                 Para o campo 'dosage', informe a quantidade do medicamento a ser tomada,
                 se nao houver essa informacao na mensagem, retorne 'não mencionado'.
                 
-                O type do retorno deve ser inferido de acordo com a mensagem recebida.
+                O type do retorno deve ser inferido de acordo com a mensagem recebida;
+                Por exemplo:
+                 - se a mensagem for uma saudação, o type deve ser WELCOME
+                 - se a mensagem for um lembrete de medicamento, o type deve ser REMINDER_CREATION
+                 - se a mensagem for uma resposta positiva de um lembrete de medicamento (tomei, ok, tudo certo, etc), o type deve ser REMINDER_RESPONSE_TAKEN
+                 - se a mensagem for uma resposta negativa de um lembrete de medicamento (não tomei, não vou tomar, esqueci, etc), o type deve ser REMINDER_RESPONSE_SKIPPED
+                 - se a mensagem for um cancelamento de um lembrete de medicamento, o type deve ser REMINDER_CANCEL
+                 - se a mensagem for uma pergunta sobre quando é o próximo lembrete, o type deve ser CHECK_NEXT_DISPATCH
+                 - se a mensagem for uma mensagem de suporte, o type deve ser SUPPORT
+                 - se a mensagem for solicitando upgrade ou downgrade do plano, o type deve ser PLAN_UPGRADE ou PLAN_DOWNGRADE
                 
                 Quando a frequencia mencionar N vezes ao dia, crie uma frequencia ideal.
                 Quando a frequencia mencionar 'após as refeições', utilize os horários 7:30, 13:00 e 20:00, repetindo todos os dias.

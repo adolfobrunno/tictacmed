@@ -14,7 +14,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-@Order(900)
+@Order(100)
 public class WelcomeMessageHandler implements HandleAndFlushMessageHandler {
 
     private final MessageClassifier messageClassifier;
@@ -49,6 +49,9 @@ public class WelcomeMessageHandler implements HandleAndFlushMessageHandler {
                 Seja cordial, gentil e breve na sua resposta.
                 Ensine ele a criar um novo lembrete de medicamento.
                 Para criar um novo lembrete ele deve informar o nome do medicamento, a quantidade a ser tomada, a frequência e a data de início.
+                Por exemplo:
+                
+                "Registrar um comprimido de dipirona a cada 8 horas durante 7 dias"
                 
                 Informe também sobre os dois planos disponíveis:
                 - Plano gratuito: 1 lembrete ativo por tempo indeterminado
