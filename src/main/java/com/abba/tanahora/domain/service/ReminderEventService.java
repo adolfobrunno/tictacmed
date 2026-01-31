@@ -2,6 +2,7 @@ package com.abba.tanahora.domain.service;
 
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.ReminderEvent;
+import com.abba.tanahora.domain.model.ReminderEventStatus;
 
 import java.util.Optional;
 
@@ -10,6 +11,8 @@ public interface ReminderEventService {
     ReminderEvent registerDispatch(Reminder reminder, String whatsappMessageId);
 
     Optional<ReminderEvent> findPendingByReminder(Reminder reminder);
+
+    void updateStatus(ReminderEvent reminderEvent, ReminderEventStatus reminderEventStatus);
 
     ReminderEvent updateDispatch(ReminderEvent event, String whatsappMessageId);
 

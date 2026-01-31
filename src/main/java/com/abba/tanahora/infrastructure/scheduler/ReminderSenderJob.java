@@ -2,6 +2,7 @@ package com.abba.tanahora.infrastructure.scheduler;
 
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.ReminderEvent;
+import com.abba.tanahora.domain.model.ReminderEventStatus;
 import com.abba.tanahora.domain.service.NotificationService;
 import com.abba.tanahora.domain.service.ReminderEventService;
 import com.abba.tanahora.domain.service.ReminderService;
@@ -10,6 +11,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +42,12 @@ public class ReminderSenderJob {
             if (reminder.isActive()) {
                 Optional<ReminderEvent> pendingEvent = reminderEventService.findPendingByReminder(reminder);
                 if (pendingEvent.isPresent()) {
-                    notificationService.sendNotification(reminder.getUser(), reminder.createMissedReminderMessage());
+                    if (pendingEvent.get().getSentAt().until(OffsetDateTime.now(), ChronoUnit.HOURS) < 1) {
+                        notificationService.sendNotification(reminder.getUser(), reminder.createMissedReminderMessage());
+                    } else {
+                        log.warn("ReminderEvent {} not replied on last 60 minutes. Status changed to MISSED", reminder.getId());
+                        reminderEventService.updateStatus(pendingEvent.get(), ReminderEventStatus.MISSED);
+                    }
                 } else {
                     String messageId = notificationService.sendNotification(reminder.getUser(), reminder.createSendReminderMessage());
                     reminderEventService.registerDispatch(reminder, messageId);

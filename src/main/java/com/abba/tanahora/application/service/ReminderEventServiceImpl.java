@@ -41,6 +41,12 @@ public class ReminderEventServiceImpl implements ReminderEventService {
     }
 
     @Override
+    public void updateStatus(ReminderEvent reminderEvent, ReminderEventStatus reminderEventStatus) {
+        reminderEvent.setStatus(reminderEventStatus);
+        reminderEventRepository.save(reminderEvent);
+    }
+
+    @Override
     public ReminderEvent updateDispatch(ReminderEvent event, String whatsappMessageId) {
         event.setWhatsappMessageId(whatsappMessageId);
         event.setSentAt(OffsetDateTime.now());
