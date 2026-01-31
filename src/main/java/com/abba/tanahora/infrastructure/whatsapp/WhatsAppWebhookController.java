@@ -32,7 +32,6 @@ public class WhatsAppWebhookController {
         this.objectMapper = objectMapper;
     }
 
-    // Verification callback used by Meta when setting up the webhook
     @GetMapping
     public ResponseEntity<String> verify(@RequestParam(name = "hub.mode", required = false) String mode,
                                          @RequestParam(name = "hub.verify_token", required = false) String verifyToken,
@@ -49,7 +48,6 @@ public class WhatsAppWebhookController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    // Receive events from WhatsApp Cloud API
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> receive(@RequestHeader Map<String, String> headers,
                                         @RequestBody(required = false) String body) {

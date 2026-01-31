@@ -3,6 +3,8 @@ package com.abba.tanahora.application.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class AiMessageProcessorDto {
 
@@ -14,5 +16,7 @@ public class AiMessageProcessorDto {
     MessageReceivedType type;
     @JsonProperty(required = true)
     String dosage;
+    @JsonProperty(required = true)
+    LocalDate startDate;
 
 }

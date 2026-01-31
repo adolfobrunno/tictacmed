@@ -20,7 +20,7 @@ public class OpenAiApiService {
 
     public <T> T sendPrompt(String stringPrompt, Class<T> schema) {
 
-        log.info("Sending prompt to OpenAI: {}", stringPrompt);
+        log.debug("Sending prompt to OpenAI: {}", stringPrompt);
 
         var converter = new BeanOutputConverter<>(schema);
         String jsonSchema = converter.getJsonSchema();
@@ -34,9 +34,11 @@ public class OpenAiApiService {
 
         var response = openAiChatModel.call(prompt);
 
-        log.info("Response: {}", response);
+        String responseText = response.getResult().getOutput().getText();
 
-        return converter.convert(Objects.requireNonNull(response.getResult().getOutput().getText()));
+        log.debug("Response: {}", responseText);
+
+        return converter.convert(Objects.requireNonNull(responseText));
     }
 
 

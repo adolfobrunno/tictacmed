@@ -28,7 +28,6 @@ public class MessageReceivedJob {
 
     @Scheduled(fixedDelayString = "${tanahora.scheduler.fixed-delay-ms:60000}")
     public void processPendingMessages() {
-        log.debug("Processing pending messages");
         List<MessageReceived> pending = messageReceivedService.getPendingMessages();
         for (MessageReceived message : pending) {
             try {
