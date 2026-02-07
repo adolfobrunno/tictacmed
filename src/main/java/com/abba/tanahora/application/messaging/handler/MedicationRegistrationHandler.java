@@ -6,6 +6,7 @@ import com.abba.tanahora.application.exceptions.ReminderLimitException;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.classifier.MessageClassifier;
 import com.abba.tanahora.application.messaging.flow.FlowState;
+import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.exceptions.InvalidRruleException;
 import com.abba.tanahora.domain.model.Medication;
 import com.abba.tanahora.domain.model.Reminder;
@@ -14,6 +15,7 @@ import com.abba.tanahora.domain.service.MedicationService;
 import com.abba.tanahora.domain.service.NotificationService;
 import com.abba.tanahora.domain.service.ReminderService;
 import com.abba.tanahora.domain.service.UserService;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -62,20 +64,27 @@ public class MedicationRegistrationHandler implements HandleAndFlushMessageHandl
         Medication medication = medicationService.createMedication(user, dto.getMedication());
         try {
             Reminder reminder = reminderService.scheduleMedication(user, medication, dto.getRrule());
-            notificationService.sendNotification(user, reminder.createNewReminderMessage());
+            notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
+                    .to(user.getWhatsappId())
+                    .message(reminder.createNewReminderMessage())
+                    .build());
 
         } catch (ReminderLimitException e) {
-            notificationService.sendNotification(user,
-                    """
-                            Ops! 🙁 Você chegou ao limite de lembretes do plano gratuito.
-                            Para criar novos lembretes, faça o upgrade para o plano Premium.
-                            Se quiser, é só responder esta mensagem e eu te envio o link para upgrade.
-                            
-                            Se preferir, você também pode apagar um lembrete existente e cadastrar um novo no lugar.
-                            """);
+            notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
+                    .to(user.getWhatsappId())
+                    .message(
+                            """
+                                    Ops! 🙁 Você chegou ao limite de lembretes do plano gratuito.
+                                    Para criar novos lembretes, faça o upgrade para o plano Premium.
+                                    Se quiser, é só responder esta mensagem e eu te envio o link para upgrade.
+                                    
+                                    Se preferir, você também pode apagar um lembrete existente e cadastrar um novo no lugar.
+                                    """)
+                    .build());
         } catch (InvalidRruleException e) {
-            notificationService.sendNotification(user,
-                    """
+            notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
+                    .to(user.getWhatsappId())
+                    .message("""
                             Ops! 🙁 Não consegui entender a recorrência informada.
                             Por favor, verifique a sintaxe e tente novamente.
                             
@@ -83,7 +92,8 @@ public class MedicationRegistrationHandler implements HandleAndFlushMessageHandl
                              - A cada 8 horas durante 7 dias
                              - Todo dia às 20:00
                              - Toda manhã até dia 10 de janeiro
-                            """);
+                            """)
+                    .build());
         }
         this.flush(state);
 

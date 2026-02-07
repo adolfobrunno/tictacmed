@@ -5,6 +5,7 @@ import com.abba.tanahora.application.dto.MessageReceivedType;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.classifier.MessageClassifier;
 import com.abba.tanahora.application.messaging.flow.FlowState;
+import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.service.NotificationService;
@@ -55,17 +56,17 @@ public class CancelMedicationHandler implements HandleAndFlushMessageHandler {
 
         if (reminderMatch.isPresent()) {
             reminderService.cancelReminder(reminderMatch.get());
-            notificationService.sendNotification(user, reminderMatch.get().createCancelNotification());
+            notificationService.sendNotification(user, BasicWhatsAppMessage.builder().to(user.getWhatsappId()).message(reminderMatch.get().createCancelNotification()).build());
         } else {
             log.warn("Medication {} not found for user {}", dto.getMedication(), userId);
-            notificationService.sendNotification(user, String.format(
+            notificationService.sendNotification(user, BasicWhatsAppMessage.builder().to(user.getWhatsappId()).message(String.format(
                     """
-                            Ops! Parece que a medicação que você informou não está registrada.
-                            
-                            Confira se o nome "%s" está correto ou se você já havia cancelado essa medicação anteriormente.
-                            
-                            """, dto.getMedication()
-            ));
+                    Ops! Parece que a medicação que você informou não está registrada.
+                    
+                    Confira se o nome "%s" está correto ou se você já havia cancelado essa medicação anteriormente.
+                    
+                    """, dto.getMedication())
+            ).build());
         }
     }
 }

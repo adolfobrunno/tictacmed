@@ -1,18 +1,18 @@
 package com.abba.tanahora.infrastructure.whatsapp;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
 import com.abba.tanahora.application.notification.WhatsAppGateway;
+import com.abba.tanahora.application.notification.WhatsAppMessage;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.infrastructure.config.WhatsAppProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Service
 public class WhatsAppGatewayImpl implements WhatsAppGateway {
@@ -31,34 +31,23 @@ public class WhatsAppGatewayImpl implements WhatsAppGateway {
     }
 
     @Override
-    public String sendMessage(User user, String message, WhatsAppMessageType type) {
-        if (!properties.isEnabled()) {
-            log.info("[WhatsApp disabled] Skipping sendMessage");
-            return "";
-        }
-        if (user == null || user.getWhatsappId() == null || user.getWhatsappId().isBlank()) {
-            log.warn("Missing WhatsApp recipient id");
-            return "";
-        }
-        if (message == null || message.isBlank()) {
-            log.warn("Empty WhatsApp message for recipient={}", mask(user.getWhatsappId()));
-            return "";
-        }
-        if (properties.getFromNumber() == null || properties.getFromNumber().isBlank()) {
-            log.warn("Missing WhatsApp fromNumber in properties");
-            return "";
-        }
-        if (properties.getAccessToken() == null || properties.getAccessToken().isBlank()) {
-            log.warn("Missing WhatsApp accessToken in properties");
+    public String sendMessage(User user, WhatsAppMessage message) {
+
+        if (message == null) {
+            log.warn("Missing WhatsApp message");
             return "";
         }
 
-        String payload = buildPayload(user.getWhatsappId(), message, type);
+        String payload = message.buildPayload();
         if (payload == null || payload.isBlank()) {
-            log.warn("Unable to build WhatsApp payload for type={}", type);
+            log.warn("Unable to build WhatsApp payload for type={}", message.getType());
             return "";
         }
 
+        return sendPayload(user, payload);
+    }
+
+    private String sendPayload(User user, String payload) {
         Request request = new Request.Builder()
                 .url(GRAPH_API_BASE + "/" + properties.getFromNumber().trim() + "/messages")
                 .post(RequestBody.create(payload, JSON))
@@ -80,35 +69,6 @@ public class WhatsAppGatewayImpl implements WhatsAppGateway {
         }
     }
 
-    private String buildPayload(String to, String message, WhatsAppMessageType type) {
-        return switch (type) {
-            case BASIC -> buildTextPayload(to, message);
-            case BUTTONS -> buildButtonsPayload(to, message);
-        };
-    }
-
-    private String buildTextPayload(String to, String message) {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("messaging_product", "whatsapp");
-        payload.put("to", to);
-        payload.put("type", "text");
-        payload.put("text", Map.of("body", message));
-        return writeJson(payload);
-    }
-
-    private String buildButtonsPayload(String to, String message) {
-        // Placeholder for interactive messages (buttons/lists) using the Meta API.
-        throw new UnsupportedOperationException("Interactive button messages are not implemented yet.");
-    }
-
-    private String writeJson(Object payload) {
-        try {
-            return objectMapper.writeValueAsString(payload);
-        } catch (Exception e) {
-            log.error("Failed to serialize WhatsApp payload: {}", e.getMessage(), e);
-            return "";
-        }
-    }
 
     private String extractMessageId(String responseBody) {
         if (responseBody == null || responseBody.isBlank()) {

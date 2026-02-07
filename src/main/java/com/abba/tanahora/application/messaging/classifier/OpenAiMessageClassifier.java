@@ -1,10 +1,13 @@
 package com.abba.tanahora.application.messaging.classifier;
 
+import java.time.OffsetDateTime;
+
+import org.springframework.stereotype.Component;
+
 import com.abba.tanahora.application.dto.AiMessageProcessorDto;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.flow.FlowState;
 import com.abba.tanahora.application.service.OpenAiApiService;
-import org.springframework.stereotype.Component;
 
 @Component
 public class OpenAiMessageClassifier implements MessageClassifier {
@@ -55,10 +58,14 @@ public class OpenAiMessageClassifier implements MessageClassifier {
                  - se a mensagem for uma mensagem de suporte, o type deve ser SUPPORT
                  - se a mensagem for solicitando upgrade ou downgrade do plano, o type deve ser PLAN_UPGRADE ou PLAN_DOWNGRADE
                 
+                A RRULE deve seguir o padrão iCalendar. Por exemplo: FREQ=DAILY;INTERVAL=1;UNTIL=20260213T000000Z
+                
                 Quando a frequencia mencionar N vezes ao dia, crie uma frequencia ideal.
                 Quando a frequencia mencionar 'após as refeições', utilize os horários 7:30, 13:00 e 20:00, repetindo todos os dias.
                 
+                Hojé é %s.
+                
                 """;
-        return openAiApiService.sendPrompt(String.format(prompt, message.getBody()), AiMessageProcessorDto.class);
+        return openAiApiService.sendPrompt(String.format(prompt, message.getBody(), OffsetDateTime.now()), AiMessageProcessorDto.class);
     }
 }

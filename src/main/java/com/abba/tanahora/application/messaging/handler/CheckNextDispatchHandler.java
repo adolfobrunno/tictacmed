@@ -5,6 +5,7 @@ import com.abba.tanahora.application.dto.MessageReceivedType;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.classifier.MessageClassifier;
 import com.abba.tanahora.application.messaging.flow.FlowState;
+import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.service.NotificationService;
@@ -48,8 +49,19 @@ public class CheckNextDispatchHandler implements HandleAndFlushMessageHandler {
         reminderService.getByUser(user)
                 .stream()
                 .min(Comparator.comparing(Reminder::getNextDispatch))
-                .ifPresentOrElse(reminder -> notificationService.sendNotification(user, reminder.createNextDispatchMessage()),
-                        () -> notificationService.sendNotification(user, "Você não tem nenhum medicamento agendado"));
+                .ifPresentOrElse(
+                        reminder -> notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
+                                .to(user.getWhatsappId())
+                                .message(reminder.createNextDispatchMessage())
+                                .build()),
+                        () -> notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
+                                .to(user.getWhatsappId())
+                                .message("""
+                                        Você não tem nenhum medicamento agendado.
+                                        
+                                        Que tal começar registrando um agora mesmo?
+                                        """)
+                                .build()));
 
 
     }

@@ -5,6 +5,7 @@ import com.abba.tanahora.application.dto.MessageReceivedType;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.classifier.MessageClassifier;
 import com.abba.tanahora.application.messaging.flow.FlowState;
+import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.ReminderEvent;
 import com.abba.tanahora.domain.service.NotificationService;
@@ -49,7 +50,10 @@ public class ReplyReminderEventHandler implements HandleAndFlushMessageHandler {
             Reminder reminder = event.getReminder();
             String messageToResponse = dto.getType() == MessageReceivedType.REMINDER_RESPONSE_TAKEN ?
                     reminder.createTakenConfirmationMessage() : reminder.createSkippedConfirmationMessage();
-            notificationService.sendNotification(reminder.getUser(), messageToResponse);
+            notificationService.sendNotification(reminder.getUser(), BasicWhatsAppMessage.builder()
+                    .to(reminder.getUser().getWhatsappId())
+                    .message(messageToResponse)
+                    .build());
             reminderService.updateReminderNextDispatch(reminder);
         });
     }

@@ -1,6 +1,7 @@
 package com.abba.tanahora.application.service;
 
 import com.abba.tanahora.application.exceptions.ReminderLimitException;
+import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.exceptions.InvalidRruleException;
 import com.abba.tanahora.domain.model.Medication;
 import com.abba.tanahora.domain.model.Reminder;
@@ -74,9 +75,15 @@ public class ReminderServiceImpl implements ReminderService {
         reminder.updateNextDispatch();
         reminderRepository.save(reminder);
         if (reminder.getStatus() == ReminderStatus.ACTIVE) {
-            notificationService.sendNotification(reminder.getUser(), reminder.createNextDispatchMessage());
+            notificationService.sendNotification(reminder.getUser(), BasicWhatsAppMessage.builder()
+                    .to(reminder.getUser().getWhatsappId())
+                    .message(reminder.createNextDispatchMessage())
+                    .build());
         } else if (reminder.getStatus() == ReminderStatus.COMPLETED) {
-            notificationService.sendNotification(reminder.getUser(), reminder.createCompletedMessage());
+            notificationService.sendNotification(reminder.getUser(), BasicWhatsAppMessage.builder()
+                    .to(reminder.getUser().getWhatsappId())
+                    .message(reminder.createCompletedMessage())
+                    .build());
         }
     }
 

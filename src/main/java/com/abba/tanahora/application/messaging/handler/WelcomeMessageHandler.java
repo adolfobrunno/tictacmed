@@ -5,6 +5,7 @@ import com.abba.tanahora.application.dto.MessageReceivedType;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.classifier.MessageClassifier;
 import com.abba.tanahora.application.messaging.flow.FlowState;
+import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.application.service.OpenAiApiService;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.service.NotificationService;
@@ -60,7 +61,10 @@ public class WelcomeMessageHandler implements HandleAndFlushMessageHandler {
 
         WelcomeMessageDTO welcomeMessageDTO = openAiApiService.sendPrompt(String.format(prompt, message.getBody()), WelcomeMessageDTO.class);
 
-        notificationService.sendNotification(user, welcomeMessageDTO.message);
+        notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
+                .to(user.getWhatsappId())
+                .message(welcomeMessageDTO.message)
+                .build());
     }
 
     static class WelcomeMessageDTO {

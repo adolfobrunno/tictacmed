@@ -1,0 +1,41 @@
+server:
+  port: ${PORT:8080}
+  address: 0.0.0.0
+
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: tanahora
+
+  jackson:
+    time-zone: America/Sao_Paulo
+
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017
+      database: ta-na-hora
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:FAKE_API_KEY}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-3.5-turbo}
+          max-tokens: ${OPENAI_MAX_TOKENS:1000}
+
+
+tanahora:
+  whatsapp:
+    enabled: true
+    from-number: 540626902478219
+    verify-token: ${TANAHORA_WHATSAPP_VERIFY_TOKEN:fAkE_vErIfY_tOkEn}
+    access-token: ${TANAHORA_WHATSAPP_ACCESS_TOKEN:FAKE_ACCESS_TOKEN}
+  scheduler:
+    enabled: ${TANAHORA_SCHEDULER_ENABLED:true}
+    fixed-delay-ms: ${TANAHORA_SCHEDULER_FIXED_DELAY_MS:60000}
+    send-reminders-delay-ms: ${TANAHORA_SCHEDULER_SEND_REMINDERS_DELAY_MS:300000}
+
+logging:
+  level:
+    com.abba: debug
