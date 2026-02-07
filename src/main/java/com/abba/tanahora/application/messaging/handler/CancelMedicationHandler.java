@@ -9,6 +9,7 @@ import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.service.NotificationService;
+import com.abba.tanahora.domain.service.PatientResolverService;
 import com.abba.tanahora.domain.service.ReminderService;
 import com.abba.tanahora.domain.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,14 @@ public class CancelMedicationHandler implements HandleAndFlushMessageHandler {
     private final UserService userService;
     private final ReminderService reminderService;
     private final NotificationService notificationService;
+    private final PatientResolverService patientResolverService;
 
-    public CancelMedicationHandler(MessageClassifier messageClassifier, UserService userService, ReminderService reminderService, NotificationService notificationService) {
+    public CancelMedicationHandler(MessageClassifier messageClassifier, UserService userService, ReminderService reminderService, NotificationService notificationService, PatientResolverService patientResolverService) {
         this.messageClassifier = messageClassifier;
         this.userService = userService;
         this.reminderService = reminderService;
         this.notificationService = notificationService;
+        this.patientResolverService = patientResolverService;
     }
 
     @Override
@@ -48,9 +51,17 @@ public class CancelMedicationHandler implements HandleAndFlushMessageHandler {
 
         String userId = state.getUserId();
         User user = userService.findByWhatsappId(userId);
+        var patient = patientResolverService.resolve(user, dto.getPatientName(), state.getLastPatientId(), false);
+        if (patient == null) {
+            notificationService.sendNotification(user,
+                    BasicWhatsAppMessage.builder().to(user.getWhatsappId()).message("Nao identifiquei o paciente. Informe o nome para cancelar.").build());
+            return;
+        }
+        state.setLastPatientId(patient.getId());
 
         Optional<Reminder> reminderMatch = reminderService.getByUser(user)
                 .stream()
+                .filter(reminder -> patient.getId().equals(reminder.getPatientId()))
                 .filter(reminder -> reminder.getMedication().getName().equalsIgnoreCase(dto.getMedication()))
                 .findFirst();
 

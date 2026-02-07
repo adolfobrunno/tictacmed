@@ -9,6 +9,7 @@ import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.service.NotificationService;
+import com.abba.tanahora.domain.service.PatientResolverService;
 import com.abba.tanahora.domain.service.ReminderService;
 import com.abba.tanahora.domain.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,14 @@ public class CheckNextDispatchHandler implements HandleAndFlushMessageHandler {
     private final ReminderService reminderService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final PatientResolverService patientResolverService;
 
-    public CheckNextDispatchHandler(MessageClassifier messageClassifier, ReminderService reminderService, UserService userService, NotificationService notificationService) {
+    public CheckNextDispatchHandler(MessageClassifier messageClassifier, ReminderService reminderService, UserService userService, NotificationService notificationService, PatientResolverService patientResolverService) {
         this.messageClassifier = messageClassifier;
         this.reminderService = reminderService;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.patientResolverService = patientResolverService;
     }
 
 

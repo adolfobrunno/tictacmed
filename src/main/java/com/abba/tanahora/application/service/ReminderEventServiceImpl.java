@@ -32,6 +32,8 @@ public class ReminderEventServiceImpl implements ReminderEventService {
         event.setReminder(reminder);
         event.setWhatsappMessageId(whatsappMessageId);
         event.setUserWhatsappId(reminder.getUser().getWhatsappId());
+        event.setPatientId(reminder.getPatientId());
+        event.setPatientName(reminder.getPatientName());
         return reminderEventRepository.save(event);
     }
 

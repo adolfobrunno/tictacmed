@@ -9,13 +9,10 @@ import com.abba.tanahora.application.messaging.flow.FlowState;
 import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.exceptions.InvalidRruleException;
 import com.abba.tanahora.domain.model.Medication;
+import com.abba.tanahora.domain.model.PatientRef;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.User;
-import com.abba.tanahora.domain.service.MedicationService;
-import com.abba.tanahora.domain.service.NotificationService;
-import com.abba.tanahora.domain.service.ReminderService;
-import com.abba.tanahora.domain.service.UserService;
-
+import com.abba.tanahora.domain.service.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -28,17 +25,20 @@ public class MedicationRegistrationHandler implements HandleAndFlushMessageHandl
     private final UserService userService;
     private final ReminderService reminderService;
     private final NotificationService notificationService;
+    private final PatientResolverService patientResolverService;
 
     public MedicationRegistrationHandler(MessageClassifier messageClassifier,
                                          MedicationService medicationService,
                                          UserService userService,
                                          ReminderService reminderService,
-                                         NotificationService notificationService) {
+                                         NotificationService notificationService,
+                                         PatientResolverService patientResolverService) {
         this.messageClassifier = messageClassifier;
         this.medicationService = medicationService;
         this.userService = userService;
         this.reminderService = reminderService;
         this.notificationService = notificationService;
+        this.patientResolverService = patientResolverService;
     }
 
     @Override
@@ -61,9 +61,18 @@ public class MedicationRegistrationHandler implements HandleAndFlushMessageHandl
         }
 
         User user = userService.register(message.getWhatsappId(), message.getContactName());
-        Medication medication = medicationService.createMedication(user, dto.getMedication());
+        PatientRef patient = patientResolverService.resolve(user, dto.getPatientName(), state.getLastPatientId(), true);
+        if (patient == null) {
+            notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
+                    .to(user.getWhatsappId())
+                    .message("Qual paciente devo usar para esse lembrete?")
+                    .build());
+            return;
+        }
+        state.setLastPatientId(patient.getId());
+        Medication medication = medicationService.createMedication(user, patient, dto.getMedication(), dto.getDosage());
         try {
-            Reminder reminder = reminderService.scheduleMedication(user, medication, dto.getRrule());
+            Reminder reminder = reminderService.scheduleMedication(user, patient, medication, dto.getRrule());
             notificationService.sendNotification(user, BasicWhatsAppMessage.builder()
                     .to(user.getWhatsappId())
                     .message(reminder.createNewReminderMessage())

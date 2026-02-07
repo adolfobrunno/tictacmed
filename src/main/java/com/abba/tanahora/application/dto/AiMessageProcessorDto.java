@@ -1,9 +1,9 @@
 package com.abba.tanahora.application.dto;
 
-import java.time.OffsetDateTime;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+
+import java.time.OffsetDateTime;
 
 @Data
 public class AiMessageProcessorDto {
@@ -18,5 +18,7 @@ public class AiMessageProcessorDto {
     String dosage;
     @JsonProperty(required = true)
     OffsetDateTime startDate;
+    @JsonProperty(required = true)
+    String patientName;
 
 }

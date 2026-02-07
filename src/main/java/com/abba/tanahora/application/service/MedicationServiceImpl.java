@@ -1,6 +1,7 @@
 package com.abba.tanahora.application.service;
 
 import com.abba.tanahora.domain.model.Medication;
+import com.abba.tanahora.domain.model.PatientRef;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.repository.MedicationRepository;
 import com.abba.tanahora.domain.service.MedicationService;
@@ -20,9 +21,12 @@ public class MedicationServiceImpl implements MedicationService {
     }
 
     @Override
-    public Medication createMedication(User user, String name) {
+    public Medication createMedication(User user, PatientRef patient, String name, String dosage) {
         if (user == null) {
             throw new IllegalArgumentException("user cannot be null");
+        }
+        if (patient == null) {
+            throw new IllegalArgumentException("patient cannot be null");
         }
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("name cannot be blank");
@@ -30,6 +34,9 @@ public class MedicationServiceImpl implements MedicationService {
         Medication medication = new Medication();
         medication.setUser(user);
         medication.setName(name);
+        medication.setDosage(dosage);
+        medication.setPatientId(patient.getId());
+        medication.setPatientName(patient.getName());
         return medicationRepository.save(medication);
     }
 

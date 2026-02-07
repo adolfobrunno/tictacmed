@@ -1,13 +1,12 @@
 package com.abba.tanahora.application.messaging.classifier;
 
-import java.time.OffsetDateTime;
-
-import org.springframework.stereotype.Component;
-
 import com.abba.tanahora.application.dto.AiMessageProcessorDto;
 import com.abba.tanahora.application.messaging.AIMessage;
 import com.abba.tanahora.application.messaging.flow.FlowState;
 import com.abba.tanahora.application.service.OpenAiApiService;
+import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
 
 @Component
 public class OpenAiMessageClassifier implements MessageClassifier {
@@ -46,6 +45,8 @@ public class OpenAiMessageClassifier implements MessageClassifier {
                 Retorne seguindo o padrão indicado.
                 Para o campo 'dosage', informe a quantidade do medicamento a ser tomada,
                 se nao houver essa informacao na mensagem, retorne 'não mencionado'.
+                Para o campo 'patientName', informe o nome do paciente quando houver
+                (ex: "para Maria"), caso contrario retorne não informado.
                 
                 O type do retorno deve ser inferido de acordo com a mensagem recebida;
                 Por exemplo:

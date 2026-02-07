@@ -1,12 +1,5 @@
 package com.abba.tanahora.infrastructure.scheduler;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.abba.tanahora.application.notification.InteractiveWhatsAppMessage;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.ReminderEvent;
@@ -17,6 +10,12 @@ import com.whatsapp.api.domain.messages.Button;
 import com.whatsapp.api.domain.messages.Reply;
 import com.whatsapp.api.domain.messages.type.ButtonType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -38,7 +37,7 @@ public class ReminderSenderJob {
     @Scheduled(fixedDelayString = "${tanahora.scheduler.send-reminders-delay-ms}")
     public void sendRemindNotification() {
 
-        List<Reminder> reminders = reminderService.getNextsRemindersToNotify();
+        List<Reminder> reminders = reminderService.getNextRemindersToNotify();
 
         reminders.forEach(reminder -> {
             if (reminder.isActive()) {

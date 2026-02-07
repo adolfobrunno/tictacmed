@@ -28,6 +28,7 @@ public class User {
 
     @DBRef(lazy = true)
     private List<Medication> medications = new ArrayList<>();
+    private List<PatientRef> patients = new ArrayList<>();
 
     public void enablePremium() {
         this.plan = Plan.PREMIUM;

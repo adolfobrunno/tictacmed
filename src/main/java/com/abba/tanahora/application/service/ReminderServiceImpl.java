@@ -3,13 +3,11 @@ package com.abba.tanahora.application.service;
 import com.abba.tanahora.application.exceptions.ReminderLimitException;
 import com.abba.tanahora.application.notification.BasicWhatsAppMessage;
 import com.abba.tanahora.domain.exceptions.InvalidRruleException;
-import com.abba.tanahora.domain.model.Medication;
-import com.abba.tanahora.domain.model.Reminder;
-import com.abba.tanahora.domain.model.ReminderStatus;
-import com.abba.tanahora.domain.model.User;
+import com.abba.tanahora.domain.model.*;
 import com.abba.tanahora.domain.repository.ReminderRepository;
 import com.abba.tanahora.domain.service.NotificationService;
 import com.abba.tanahora.domain.service.ReminderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -18,6 +16,7 @@ import java.util.Optional;
 
 import static com.abba.tanahora.domain.utils.Constants.BRAZIL_ZONEID;
 
+@Slf4j
 @Service
 public class ReminderServiceImpl implements ReminderService {
 
@@ -30,10 +29,17 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Reminder scheduleMedication(User user, Medication med, String rrule) {
+    public Reminder scheduleMedication(User user, PatientRef patient, Medication med, String rrule) {
 
         if (rrule == null || rrule.isBlank()) {
             throw new InvalidRruleException("rrule cannot be blank");
+        }
+        if (patient == null) {
+            patient = new PatientRef();
+            patient.setId(user.getId());
+            patient.setName(user.getName());
+            patient.setCreatedAt(OffsetDateTime.now(BRAZIL_ZONEID));
+            log.debug("Patient not found, using user as patient");
         }
 
         if (canCreateReminder(user)) {
@@ -42,6 +48,8 @@ public class ReminderServiceImpl implements ReminderService {
             reminder.setRrule(rrule);
             reminder.setStatus(ReminderStatus.ACTIVE);
             reminder.setUser(user);
+            reminder.setPatientId(patient.getId());
+            reminder.setPatientName(patient.getName());
             reminder.updateNextDispatch();
             return reminderRepository.save(reminder);
         } else {
@@ -55,7 +63,7 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public List<Reminder> getNextsRemindersToNotify() {
+    public List<Reminder> getNextRemindersToNotify() {
         return reminderRepository.findPendingNextDispatch(OffsetDateTime.now(BRAZIL_ZONEID));
     }
 

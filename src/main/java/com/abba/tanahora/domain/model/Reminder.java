@@ -36,6 +36,9 @@ public class Reminder {
     private ReminderStatus status = ReminderStatus.ACTIVE;
     private OffsetDateTime createdAt = OffsetDateTime.now();
     private OffsetDateTime canceledAt;
+    @Indexed
+    private String patientId;
+    private String patientName;
 
     @DBRef
     private User user;
@@ -86,66 +89,82 @@ public class Reminder {
         return String.format("""
                 Olá! 👋
                 
-                Está na hora de tomar seu medicamento: %s. Dose: %s
+                Está na hora de tomar o medicamento do paciente %s: %s. Dose: %s
                 
                 Assim você mantém seu tratamento em dia!
                 
                 Responda como "Tomei" ✅ ou "Esqueci" ❌ para registrar.
-                """, medication.getName(), medication.getDosage());
+                """, patientLabel(), medication.getName(), safeDosage());
     }
 
     public String createTakenConfirmationMessage() {
         return String.format("""
-                ✅ Ótimo! Registramos que você tomou seu medicamento: %s.
+                ✅ Ótimo! Registramos que o paciente %s tomou o medicamento: %s.
                 
                 Continue assim!
-                """, medication.getName());
+                """, patientLabel(), medication.getName());
     }
 
     public String createNextDispatchMessage() {
-        return String.format("⏰ Próximo lembrete para o medicamento %s agendado para %s",
+        return String.format("⏰ Próximo lembrete para o paciente %s do medicamento %s agendado para %s",
+                patientLabel(),
                 medication.getName(),
                 nextDispatch.atZoneSameInstant(BRAZIL_ZONEID).toLocalTime().truncatedTo(ChronoUnit.MINUTES).toString());
     }
 
     public String createMissedReminderMessage() {
         return String.format("""
-                ⚠️ Notamos que você não registrou a tomada do seu medicamento: %s.
+                ⚠️ Notamos que você não registrou a tomada do medicamento do paciente %s: %s.
                 
                 Lembre-se de manter seu tratamento em dia!
                 
                 Responda como "Tomei" ou "Esqueci" para registrar.
-                """, medication.getName());
+                """, patientLabel(), medication.getName());
     }
 
     public String createSkippedConfirmationMessage() {
         return String.format("""
-                ❌ Entendido. Registramos que você esqueceu de tomar seu medicamento: %s.
+                ❌ Entendido. Registramos que o paciente %s esqueceu de tomar o medicamento: %s.
                 
                 Tente não esquecer da próxima vez!
-                """, medication.getName());
+                """, patientLabel(), medication.getName());
     }
 
     public String createNewReminderMessage() {
         return String.format("""
-                📅 Novo lembrete criado para o medicamento: %s.
-                """, medication.getName());
+                📅 Novo lembrete criado para o paciente %s do medicamento: %s.
+                """, patientLabel(), medication.getName());
     }
 
     public String createCompletedMessage() {
         return String.format("""
-                🎉 Parabéns! Você concluiu o tratamento do seu medicamento: %s.
-                """, medication.getName());
+                🎉 Parabéns! Você concluiu o tratamento do paciente %s para o medicamento: %s.
+                """, patientLabel(), medication.getName());
     }
 
     public String createCancelNotification() {
         return String.format("""
                 Tudo bem 👍
-                Cancelamos o seu lembrete para o medicamento: %s.
+                Cancelamos o lembrete do paciente %s para o medicamento: %s.
                 
                 Se precisar, basta registrar novamente.
                 
                 Até breve 👋
-                """, medication.getName());
+                """, patientLabel(), medication.getName());
+    }
+
+
+    private String patientLabel() {
+        if (patientName == null || patientName.isBlank()) {
+            return "paciente";
+        }
+        return patientName;
+    }
+
+    private String safeDosage() {
+        if (medication == null || medication.getDosage() == null || medication.getDosage().isBlank()) {
+            return "nao informado";
+        }
+        return medication.getDosage();
     }
 }

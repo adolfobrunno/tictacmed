@@ -11,5 +11,6 @@ public class FlowState {
     private String userId;
     private String currentFlow;
     private String step;
+    private String lastPatientId;
     private Map<String, Object> context = new HashMap<>();
 }

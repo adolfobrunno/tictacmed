@@ -22,6 +22,8 @@ public class ReminderEvent {
 
     @Indexed(name = "reminder_event_message_idx")
     private String whatsappMessageId;
+    private String patientId;
+    private String patientName;
 
     private ReminderEventStatus status = ReminderEventStatus.PENDING;
 
