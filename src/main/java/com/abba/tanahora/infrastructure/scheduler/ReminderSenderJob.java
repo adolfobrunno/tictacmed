@@ -3,6 +3,7 @@ package com.abba.tanahora.infrastructure.scheduler;
 import com.abba.tanahora.application.notification.InteractiveWhatsAppMessage;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.ReminderEvent;
+import com.abba.tanahora.domain.model.ReminderEventStatus;
 import com.abba.tanahora.domain.service.NotificationService;
 import com.abba.tanahora.domain.service.ReminderEventService;
 import com.abba.tanahora.domain.service.ReminderService;
@@ -46,6 +47,11 @@ public class ReminderSenderJob {
                 if (pendingEvent.isPresent()) {
                     ReminderEvent event = pendingEvent.get();
                     OffsetDateTime now = OffsetDateTime.now();
+                    if (event.getResponseReceivedAt() == null &&
+                            event.getSentAt() != null &&
+                            event.getSentAt().plusMinutes(15).isBefore(now)) {
+                        reminderEventService.updateStatus(event, ReminderEventStatus.SNOOZED);
+                    }
                     if (event.getSnoozedUntil() != null && event.getSnoozedUntil().isAfter(now)) {
                         return;
                     }
