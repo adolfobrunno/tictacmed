@@ -93,7 +93,7 @@ public class WhatsAppWebhookController {
                                 String btnId = interactive.path("button_reply").path("id").asText(null);
                                 String listTitle = interactive.path("list_reply").path("title").asText(null);
                                 String listId = interactive.path("list_reply").path("id").asText(null);
-                                bodyText = firstNonBlank(btnId, btnTitle, listTitle, listId);
+                                bodyText = firstNonBlank(btnTitle, btnId, listTitle, listId);
                             } else {
                                 bodyText = msg.path("text").path("body").asText(null);
                             }

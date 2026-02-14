@@ -4,6 +4,7 @@ import com.abba.tanahora.domain.model.PatientRef;
 import com.abba.tanahora.domain.model.User;
 import com.abba.tanahora.domain.repository.UserRepository;
 import com.abba.tanahora.domain.service.PatientResolverService;
+import com.abba.tanahora.domain.utils.Constants;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public class PatientResolverServiceImpl implements PatientResolverService {
     public PatientRef resolve(User user, String patientName, String lastPatientId, boolean createIfMissing) {
         if (user == null) {
             throw new IllegalArgumentException("user cannot be null");
+        }
+
+        if (Constants.NOT_INFORMED.equalsIgnoreCase(patientName)) {
+            return null;
         }
 
         List<PatientRef> patients = user.getPatients();

@@ -4,5 +4,6 @@ public enum ReminderEventStatus {
     PENDING,
     TAKEN,
     SKIPPED,
-    MISSED
+    MISSED,
+    SNOOZED
 }

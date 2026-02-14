@@ -34,13 +34,6 @@ public class ReminderServiceImpl implements ReminderService {
         if (rrule == null || rrule.isBlank()) {
             throw new InvalidRruleException("rrule cannot be blank");
         }
-        if (patient == null) {
-            patient = new PatientRef();
-            patient.setId(user.getId());
-            patient.setName(user.getName());
-            patient.setCreatedAt(OffsetDateTime.now(BRAZIL_ZONEID));
-            log.debug("Patient not found, using user as patient");
-        }
 
         if (canCreateReminder(user)) {
             Reminder reminder = new Reminder();

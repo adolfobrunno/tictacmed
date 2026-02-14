@@ -13,8 +13,10 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Iterator;
@@ -93,7 +95,6 @@ public class Reminder {
                 
                 Assim você mantém seu tratamento em dia!
                 
-                Responda como "Tomei" ✅ ou "Esqueci" ❌ para registrar.
                 """, patientLabel(), medication.getName(), safeDosage());
     }
 
@@ -106,10 +107,29 @@ public class Reminder {
     }
 
     public String createNextDispatchMessage() {
-        return String.format("⏰ Próximo lembrete para o paciente %s do medicamento %s agendado para %s",
+        var zonedNextDispatch = nextDispatch.atZoneSameInstant(BRAZIL_ZONEID);
+        LocalDate dispatchDate = zonedNextDispatch.toLocalDate();
+        LocalDate today = LocalDate.now(BRAZIL_ZONEID);
+        LocalDate tomorrow = today.plusDays(1);
+
+        String dayLabel;
+        if (dispatchDate.isEqual(today)) {
+            dayLabel = "hoje";
+        } else if (dispatchDate.isEqual(tomorrow)) {
+            dayLabel = "amanhã";
+        } else {
+            dayLabel = dispatchDate.format(DateTimeFormatter.ofPattern("dd/MM"));
+        }
+
+        String timeLabel = zonedNextDispatch.toLocalTime()
+                .truncatedTo(ChronoUnit.MINUTES)
+                .format(DateTimeFormatter.ofPattern("HH:mm"));
+
+        return String.format("⏰ Próximo lembrete para o paciente %s do medicamento %s agendado para %s às %s",
                 patientLabel(),
                 medication.getName(),
-                nextDispatch.atZoneSameInstant(BRAZIL_ZONEID).toLocalTime().truncatedTo(ChronoUnit.MINUTES).toString());
+                dayLabel,
+                timeLabel);
     }
 
     public String createMissedReminderMessage() {
@@ -118,7 +138,6 @@ public class Reminder {
                 
                 Lembre-se de manter seu tratamento em dia!
                 
-                Responda como "Tomei" ou "Esqueci" para registrar.
                 """, patientLabel(), medication.getName());
     }
 
@@ -163,7 +182,7 @@ public class Reminder {
 
     private String safeDosage() {
         if (medication == null || medication.getDosage() == null || medication.getDosage().isBlank()) {
-            return "nao informado";
+            return "não informado";
         }
         return medication.getDosage();
     }

@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,14 +44,23 @@ public class ReminderSenderJob {
             if (reminder.isActive()) {
                 Optional<ReminderEvent> pendingEvent = reminderEventService.findPendingByReminder(reminder);
                 if (pendingEvent.isPresent()) {
+                    ReminderEvent event = pendingEvent.get();
+                    OffsetDateTime now = OffsetDateTime.now();
+                    if (event.getSnoozedUntil() != null && event.getSnoozedUntil().isAfter(now)) {
+                        return;
+                    }
+                    String reminderText = event.getSnoozedUntil() != null
+                            ? reminder.createSendReminderMessage()
+                            : reminder.createMissedReminderMessage();
                     String messageId = notificationService.sendNotification(reminder.getUser(), InteractiveWhatsAppMessage
                             .builder()
                             .to(reminder.getUser().getWhatsappId())
-                            .text(reminder.createMissedReminderMessage())
+                            .text(reminderText)
                             .button(new Button().setType(ButtonType.REPLY).setReply(new Reply().setTitle("Tomei").setId("tomei_btn")))
                             .button(new Button().setType(ButtonType.REPLY).setReply(new Reply().setTitle("Esqueci").setId("esqueci_btn")))
+                            .button(new Button().setType(ButtonType.REPLY).setReply(new Reply().setTitle("Adiar").setId("adiar_btn")))
                             .build());
-                    reminderEventService.updateDispatch(pendingEvent.get(), messageId);
+                    reminderEventService.updateDispatch(event, messageId);
                 } else {
                     String messageId = notificationService.sendNotification(reminder.getUser(), InteractiveWhatsAppMessage
                             .builder()
@@ -58,6 +68,7 @@ public class ReminderSenderJob {
                             .text(reminder.createSendReminderMessage())
                             .button(new Button().setType(ButtonType.REPLY).setReply(new Reply().setTitle("Tomei").setId("tomei_btn")))
                             .button(new Button().setType(ButtonType.REPLY).setReply(new Reply().setTitle("Esqueci").setId("esqueci_btn")))
+                            .button(new Button().setType(ButtonType.REPLY).setReply(new Reply().setTitle("Adiar").setId("adiar_btn")))
                             .build());
                     reminderEventService.registerDispatch(reminder, messageId);
                 }

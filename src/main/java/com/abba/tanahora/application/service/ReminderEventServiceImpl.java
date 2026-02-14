@@ -11,6 +11,7 @@ import com.abba.tanahora.domain.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -52,6 +53,7 @@ public class ReminderEventServiceImpl implements ReminderEventService {
     public ReminderEvent updateDispatch(ReminderEvent event, String whatsappMessageId) {
         event.setWhatsappMessageId(whatsappMessageId);
         event.setSentAt(OffsetDateTime.now());
+        event.setSnoozedUntil(null);
         return reminderEventRepository.save(event);
     }
 
@@ -83,10 +85,44 @@ public class ReminderEventServiceImpl implements ReminderEventService {
         return event;
     }
 
+    @Override
+    public Optional<ReminderEvent> snoozeFromResponse(String replyToMessageId, String userId, Duration snoozeDuration, int maxSnoozes) {
+        User user = userService.findByWhatsappId(userId);
+        Optional<ReminderEvent> event;
+
+        if (replyToMessageId == null) {
+            event = reminderEventRepository.findLastByUserWhatsappIdAndStatus(user.getWhatsappId(), ReminderEventStatus.PENDING);
+        } else {
+            event = reminderEventRepository.findFirstByWhatsappMessageId(replyToMessageId);
+        }
+
+        if (event.isEmpty()) {
+            return Optional.empty();
+        }
+
+        ReminderEvent reminderEvent = event.get();
+        if (reminderEvent.getSnoozeCount() >= maxSnoozes) {
+            reminderEvent.setStatus(ReminderEventStatus.MISSED);
+            reminderEvent.setResponseReceivedAt(OffsetDateTime.now());
+            reminderEventRepository.save(reminderEvent);
+            return Optional.of(reminderEvent);
+        }
+
+        reminderEvent.setSnoozedUntil(OffsetDateTime.now().plus(snoozeDuration));
+        reminderEvent.setSnoozeCount(reminderEvent.getSnoozeCount() + 1);
+        reminderEventRepository.save(reminderEvent);
+        return Optional.of(reminderEvent);
+    }
+
     private ReminderEventStatus resolveStatus(String responseText) {
 
         MessageReceivedType messageReceivedType = MessageReceivedType.valueOf(responseText);
 
-        return messageReceivedType == MessageReceivedType.REMINDER_RESPONSE_TAKEN ? ReminderEventStatus.TAKEN : ReminderEventStatus.SKIPPED;
+        return switch (messageReceivedType) {
+            case REMINDER_RESPONSE_TAKEN -> ReminderEventStatus.TAKEN;
+            case REMINDER_RESPONSE_SKIPPED -> ReminderEventStatus.SKIPPED;
+            case REMINDER_RESPONSE_SNOOZED -> ReminderEventStatus.PENDING;
+            default -> ReminderEventStatus.MISSED;
+        };
     }
 }

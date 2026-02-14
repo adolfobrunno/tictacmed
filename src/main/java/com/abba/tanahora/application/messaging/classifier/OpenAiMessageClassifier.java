@@ -44,9 +44,9 @@ public class OpenAiMessageClassifier implements MessageClassifier {
                 
                 Retorne seguindo o padrão indicado.
                 Para o campo 'dosage', informe a quantidade do medicamento a ser tomada,
-                se nao houver essa informacao na mensagem, retorne 'não mencionado'.
+                se não houver essa informacao na mensagem, retorne 'não informado'.
                 Para o campo 'patientName', informe o nome do paciente quando houver
-                (ex: "para Maria"), caso contrario retorne não informado.
+                (ex: "para Maria"), caso contrario retorne 'não informado'.
                 
                 O type do retorno deve ser inferido de acordo com a mensagem recebida;
                 Por exemplo:
@@ -54,6 +54,7 @@ public class OpenAiMessageClassifier implements MessageClassifier {
                  - se a mensagem for um lembrete de medicamento, o type deve ser REMINDER_CREATION
                  - se a mensagem for uma resposta positiva de um lembrete de medicamento (tomei, ok, tudo certo, etc), o type deve ser REMINDER_RESPONSE_TAKEN
                  - se a mensagem for uma resposta negativa de um lembrete de medicamento (não tomei, não vou tomar, esqueci, etc), o type deve ser REMINDER_RESPONSE_SKIPPED
+                 - se a mensagem for um adiamento de lembrete (adiar, depois, mais tarde, etc), o type deve ser REMINDER_RESPONSE_SNOOZED
                  - se a mensagem for um cancelamento de um lembrete de medicamento, o type deve ser REMINDER_CANCEL
                  - se a mensagem for uma pergunta sobre quando é o próximo lembrete, o type deve ser CHECK_NEXT_DISPATCH
                  - se a mensagem for uma mensagem de suporte, o type deve ser SUPPORT

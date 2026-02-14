@@ -5,5 +5,6 @@ import java.time.ZoneId;
 public final class Constants {
 
     public static final ZoneId BRAZIL_ZONEID = ZoneId.of("America/Sao_Paulo");
+    public static final String NOT_INFORMED = "não informado";
 
 }

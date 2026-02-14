@@ -4,6 +4,7 @@ import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.ReminderEvent;
 import com.abba.tanahora.domain.model.ReminderEventStatus;
 
+import java.time.Duration;
 import java.util.Optional;
 
 public interface ReminderEventService {
@@ -17,4 +18,6 @@ public interface ReminderEventService {
     ReminderEvent updateDispatch(ReminderEvent event, String whatsappMessageId);
 
     Optional<ReminderEvent> updateStatusFromResponse(String replyToMessageId, String responseText, String userId);
+
+    Optional<ReminderEvent> snoozeFromResponse(String replyToMessageId, String userId, Duration snoozeDuration, int maxSnoozes);
 }

@@ -26,6 +26,8 @@ public class ReminderEvent {
     private String patientName;
 
     private ReminderEventStatus status = ReminderEventStatus.PENDING;
+    private OffsetDateTime snoozedUntil;
+    private int snoozeCount = 0;
 
     @DBRef
     private Reminder reminder;
