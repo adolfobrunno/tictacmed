@@ -12,7 +12,10 @@ import com.abba.tanahora.domain.model.Medication;
 import com.abba.tanahora.domain.model.PatientRef;
 import com.abba.tanahora.domain.model.Reminder;
 import com.abba.tanahora.domain.model.User;
-import com.abba.tanahora.domain.service.*;
+import com.abba.tanahora.domain.service.NotificationService;
+import com.abba.tanahora.domain.service.PatientResolverService;
+import com.abba.tanahora.domain.service.ReminderService;
+import com.abba.tanahora.domain.service.UserService;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -21,20 +24,17 @@ import org.springframework.stereotype.Component;
 public class MedicationRegistrationHandler implements HandleAndFlushMessageHandler {
 
     private final MessageClassifier messageClassifier;
-    private final MedicationService medicationService;
     private final UserService userService;
     private final ReminderService reminderService;
     private final NotificationService notificationService;
     private final PatientResolverService patientResolverService;
 
     public MedicationRegistrationHandler(MessageClassifier messageClassifier,
-                                         MedicationService medicationService,
                                          UserService userService,
                                          ReminderService reminderService,
                                          NotificationService notificationService,
                                          PatientResolverService patientResolverService) {
         this.messageClassifier = messageClassifier;
-        this.medicationService = medicationService;
         this.userService = userService;
         this.reminderService = reminderService;
         this.notificationService = notificationService;
@@ -70,7 +70,9 @@ public class MedicationRegistrationHandler implements HandleAndFlushMessageHandl
             return;
         }
         state.setLastPatientId(patient.getId());
-        Medication medication = medicationService.createMedication(user, patient, dto.getMedication(), dto.getDosage());
+        Medication medication = new Medication();
+        medication.setName(dto.getMedication());
+        medication.setDosage(dto.getDosage());
         try {
             Reminder reminder = reminderService.scheduleMedication(user, patient, medication, dto.getRrule());
             notificationService.sendNotification(user, BasicWhatsAppMessage.builder()

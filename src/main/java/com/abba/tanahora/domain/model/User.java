@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.OffsetDateTime;
@@ -26,8 +25,6 @@ public class User {
     private OffsetDateTime proSince;
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
-    @DBRef(lazy = true)
-    private List<Medication> medications = new ArrayList<>();
     private List<PatientRef> patients = new ArrayList<>();
 
     public void enablePremium() {

@@ -44,7 +44,7 @@ public class Reminder {
 
     @DBRef
     private User user;
-    @DBRef private Medication medication;
+    private Medication medication;
 
     public void updateNextDispatch() {
         try {
